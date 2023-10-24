@@ -11,7 +11,8 @@ class Char:
     UNKNOWN = '\u25CF'
 
 def clear_screen(): 
-        print('\n' * 24)
+        # print('\n' * 24)
+        print('\x9B3J\x9B;H\x9B0J')
         
 class TitleMenu:
     '''

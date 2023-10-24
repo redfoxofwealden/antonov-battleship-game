@@ -5,7 +5,8 @@ class Char:
     Contains a list of characters from clearing the terminal screen
     to characters representing hits, misses, ships.
     '''
-    _clear_screen = '\x9B3J\x9B;H\x9B0J'
+    # _clear_screen = '\x9B3J\x9B;H\x9B0J'
+    _clear_screen = '\x9B3J'
 
     HIT = '\u2731'
     MISS = '-'
@@ -138,6 +139,8 @@ def test():
 
     print(Color.format(' This is red on white background ', 1, 15))
 
-    input('Press return to finish.\n')
+    str = input('Press return to finish.\n')
+    while str == '':
+            str = input('Press return to finish.\n')
 
 test()

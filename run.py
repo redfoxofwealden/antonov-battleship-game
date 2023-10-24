@@ -42,9 +42,8 @@ class TitleMenu:
 
     @staticmethod
     def display_menu():
-        print('\n\x9B33mEnter one of the following:')
-        print('\nI for instructions.')
-        print('P to the play the game.\x9B0m')
+        print('\x9B93mEnter I for instructions.')
+        print('      P to the play the game.\x9B0m')
  
     @staticmethod
     def input_user_response():
@@ -65,7 +64,8 @@ class TitleMenu:
         return user_response
 
 def test():
-    user_option = TitleMenu.run()
-    print('\nUser response is ' + user_option)
+    while True:
+        user_option = TitleMenu.run()
+        print('\nUser response is ' + user_option)
 
 test()

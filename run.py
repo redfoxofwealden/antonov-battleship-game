@@ -5,8 +5,7 @@ class Char:
     Contains a list of characters from clearing the terminal screen
     to characters representing hits, misses, ships.
     '''
-    # _clear_screen = '\x9B3J\x9B;H\x9B0J'
-    _clear_screen = '\x9B3J'
+    _clear_screen = '\x9B3J\x9B;H\x9B0J'
 
     HIT = '\u2731'
     MISS = '-'
@@ -101,7 +100,7 @@ class Color:
 
     @staticmethod
     def init():
-        Color.reset()
+        # Color.reset()
         Color.set_background(Color._BACKGROUND_COLOR)
         Color.set_foreground(Color._FOREGROUND_COLOR)
 
@@ -133,8 +132,8 @@ class Title:
         print(Title._title_name)
 
 def test():
-    Color.init()
     Char.clear_screen()
+    Color.init()
     Title.display()
 
     print(Color.format(' This is red on white background ', 1, 15))

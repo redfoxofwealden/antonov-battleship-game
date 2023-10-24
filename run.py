@@ -1,4 +1,5 @@
 # Write your code to expect a terminal of 80 characters wide and 24 rows high
+import os
 
 class Char:
     '''
@@ -14,95 +15,98 @@ class Char:
 
     def clear_screen():
         print(Char._clear_screen, end='')
+        # os.system('clear')
 
-class Color:
-    '''
-    Manages ASCII Select Graphic Rendition characters
-    for selecting foreground and background colours.
 
-    Manages 256 color for setting and retrieval.
-    '''
+# class Color:
+#     '''
+#     Manages ASCII Select Graphic Rendition characters
+#     for selecting foreground and background colours.
 
-    _FOREGROUND_COLOR = int(82) # light green
-    _BACKGROUND_COLOR = int(0)  # black
+#     Manages 256 color for setting and retrieval.
+#     '''
 
-    _TEMPLATE_BACKGROUND = '\x9B48;5;{}m'
-    _TEMPLATE_FOREGROUND = '\x9B38;5;{}m'
-    _RESET = '\x9B0m'
+#     _FOREGROUND_COLOR = int(82) # light green
+#     _BACKGROUND_COLOR = int(0)  # black
 
-    _current_background = ''
-    _current_foreground = ''
-    _current_background_int = -1
-    _current_foreground_int = -1
+#     _TEMPLATE_BACKGROUND = '\x9B48;5;{}m'
+#     _TEMPLATE_FOREGROUND = '\x9B38;5;{}m'
+#     _RESET = '\x9B0m'
+
+#     _current_background = ''
+#     _current_foreground = ''
+#     _current_background_int = -1
+#     _current_foreground_int = -1
     
-    @staticmethod
-    def format(string, fg_color=None, bg_color=None):
-        fg_string = ''
-        bg_string = ''
+#     @staticmethod
+#     def format(string, fg_color=None, bg_color=None):
+#         fg_string = ''
+#         bg_string = ''
 
-        if fg_color is not None:
-            fg_string = Color._TEMPLATE_FOREGROUND.format(int(fg_color))
+#         if fg_color is not None:
+#             fg_string = Color._TEMPLATE_FOREGROUND.format(int(fg_color))
             
-        if bg_color is not None:
-            bg_string = Color._TEMPLATE_BACKGROUND.format(int(bg_color))
+#         if bg_color is not None:
+#             bg_string = Color._TEMPLATE_BACKGROUND.format(int(bg_color))
         
-        format_string = bg_string + fg_string + string
-        format_string += Color._current_background
-        format_string += Color._current_foreground
+#         format_string = bg_string + fg_string + string
+#         format_string += Color._current_background
+#         format_string += Color._current_foreground
 
-        return str(format_string)
+#         return str(format_string)
     
-    @staticmethod
-    def get_background():
-        return Color._current_background_int
+#     @staticmethod
+#     def get_background():
+#         return Color._current_background_int
 
-    @staticmethod
-    def get_foreground():
-        return Color._current_foreground_int
+#     @staticmethod
+#     def get_foreground():
+#         return Color._current_foreground_int
 
-    @staticmethod
-    def reset():
-        '''
-        Restore terminal colors to its system defaults
-        '''
-        print(Color._RESET, end='')
-        Color._current_background = ''
-        Color._current_foreground = ''
-        Color._current_background_int = -1
-        Color._current_foreground_int = -1
+#     @staticmethod
+#     def reset():
+#         '''
+#         Restore terminal colors to its system defaults
+#         '''
+#         print(Color._RESET, end='')
+#         Color._current_background = ''
+#         Color._current_foreground = ''
+#         Color._current_background_int = -1
+#         Color._current_foreground_int = -1
 
-    @staticmethod
-    def restore():
-        if Color._current_background != '':
-            print(Color._current_background, end='')
+#     @staticmethod
+#     def restore():
+#         if Color._current_background != '':
+#             print(Color._current_background, end='')
                
-        if Color._current_foreground != '':
-            print(Color._current_foreground, end='')
+#         if Color._current_foreground != '':
+#             print(Color._current_foreground, end='')
 
-    @staticmethod
-    def set_background(background_color):
-        Color._current_background_int = int(background_color)
-        Color._current_background = str(
-            Color._TEMPLATE_BACKGROUND.format(
-                int(background_color))
-        )
-        print(Color._current_background, end='')
+#     @staticmethod
+#     def set_background(background_color):
+#         Color._current_background_int = int(background_color)
+#         Color._current_background = str(
+#             Color._TEMPLATE_BACKGROUND.format(
+#                 int(background_color))
+#         )
+#         print(Color._current_background, end='')
 
-    @staticmethod
-    def set_foreground(foreground_color):
-        Color._current_foreground_int = int(foreground_color)
-        Color._current_foreground = str(
-            Color._TEMPLATE_FOREGROUND.format(
-                int(foreground_color))
-        )
-        print(Color._current_foreground, end='')
-        return Color
+#     @staticmethod
+#     def set_foreground(foreground_color):
+#         Color._current_foreground_int = int(foreground_color)
+#         Color._current_foreground = str(
+#             Color._TEMPLATE_FOREGROUND.format(
+#                 int(foreground_color))
+#         )
+#         print(Color._current_foreground, end='')
+#         return Color
 
-    @staticmethod
-    def init():
-        # Color.reset()
-        Color.set_background(Color._BACKGROUND_COLOR)
-        Color.set_foreground(Color._FOREGROUND_COLOR)
+#     @staticmethod
+#     def init():
+#         # Color.reset()
+#         Color.set_background(Color._BACKGROUND_COLOR)
+#         Color.set_foreground(Color._FOREGROUND_COLOR)
+
 
 class Title:
     '''
@@ -133,13 +137,16 @@ class Title:
 
 def test():
     Char.clear_screen()
-    Color.init()
     Title.display()
 
-    print(Color.format(' This is red on white background ', 1, 15))
+    
 
     str = input('Press return to finish.\n')
     while str == '':
             str = input('Press return to finish.\n')
+
+    Char.clear_screen()
+
+    print('Screen is clear.')
 
 test()

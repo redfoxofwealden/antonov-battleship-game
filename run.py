@@ -42,8 +42,8 @@ class TitleMenu:
 
     @staticmethod
     def display_menu():
-        print('\x9B93mEnter I for instructions.')
-        print('      P to play the game.\x9B0m')
+        print('\x9B93m' + str('Enter I for instructions,').center(80))
+        print(str('   or P to play the game.').center(80) + '\x9B0m')
  
     @staticmethod
     def input_user_response():
@@ -52,8 +52,8 @@ class TitleMenu:
             if user_input == 'i' or user_input == 'p':
                 return user_input
             else:
-                print('\n\x9B97m\x9B41m Invalid Input! Make sure you enter one of these options \x9B0m')
-                print('\x9B97m\x9B41m I for instructions; or P to play.                       \x9B0m')
+                print('\n\x9B97m\x9B41m Invalid Input! Make sure you enter one of these options: \x9B0m')
+                print('\x9B97m\x9B41m I for instructions, or P to play.                        \x9B0m')
     
     @staticmethod
     def run():

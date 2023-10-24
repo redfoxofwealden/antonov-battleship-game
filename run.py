@@ -11,14 +11,13 @@ class Char:
     UNKNOWN = '\u25CF'
 
 def clear_screen(): 
-        # print('\n' * 24)
-        print('\x9B3J\x9B;H\x9B0J')
+        print('\x9B3J\x9B;H\x9B0J', end='')
         
 class TitleMenu:
     '''
     Displaying the title of the game.
     '''
-    _title_name = str(r'''
+    _title_name = str('\x9B92m' + r'''
                       ___        _                         
                      / _ \      | |                        
                     / /_\ \_ __ | |_ ___  _ __   _____   __
@@ -35,16 +34,16 @@ class TitleMenu:
               \____/ \__,_|\__|\__|_|\___||___/_| |_|_| .__/|___/
                                                       | |        
                                                       |_|          
-    ''')
+    ''' + '\x9B0m')
     
     @staticmethod
     def display_title():
-        print('\x9B32m' + TitleMenu._title_name + '\x9B0m')
+        print(TitleMenu._title_name)
 
     @staticmethod
     def display_menu():
         print('\x9B93mEnter I for instructions.')
-        print('      P to the play the game.\x9B0m')
+        print('      P to play the game.\x9B0m')
  
     @staticmethod
     def input_user_response():

@@ -138,4 +138,6 @@ def test():
 
     print(Color.format(' This is red on white background ', 1, 15))
 
+    input('Press return to finish.\n')
+
 test()

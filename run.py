@@ -228,4 +228,4 @@ def test():
     print(Board._board_size)
     print(Board._num_of_ships)
 
-main()
+test()

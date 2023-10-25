@@ -17,16 +17,8 @@ class SGR:
         return str('\x9B41m')
     
     @staticmethod
-    def fg_green():
-        return str('\x9B32m')
-
-    @staticmethod
     def fg_lt_green():
         return str('\x9B92m')
-
-    @staticmethod
-    def fg_red():
-        return str('\x9B31m')
 
     @staticmethod
     def fg_lt_red():
@@ -88,7 +80,7 @@ class Board:
         {
             'id': 3,
             'label': BOARD_OBJ_HIT,
-            'char': str(SGR.fg_red() + '\u2731')
+            'char': str(SGR.fg_lt_red() + '\u2731')
         }
     )
 
@@ -103,19 +95,20 @@ class Board:
     @staticmethod
     def user_select_board_size():
         clear_screen()
+        print(
+            SGR.fg_yellow() +
+            'What size of board do you want to play with?'
+            '\nEnter one of the following choices:-'
+            '\n'
+            '\n 5 for 5 by 5 board with 5 ships;'
+            '\n 6 for 6 by 6 board with 7 ships;'
+            '\n 7 for 7 by 7 board with 9 ships;'
+            '\n 8 for 8 by 8 board with 12 ships.' +
+            SGR.fg_default()
+        )
         while True:
             try:
-                print(
-                    SGR.fg_yellow() +
-                    'Enter the following choices for the'
-                    '\nsize of board that you want:'
-                    '\n 5 for 5 by 5 board;'
-                    '\n 6 for 6 by 6 board;'
-                    '\n 7 for 7 by 7 board;'
-                    '\n 8 for 8 by 8 board.' +
-                    SGR.fg_default()
-                )
-                user_board_size = input('\nEnter your choice for the size of board:\n')
+                user_board_size = input('\nEnter your choice:\n')
                 if int(user_board_size) > 4 and int(user_board_size) < 9:
                     Board.set_board_size(int(user_board_size))
                     break
@@ -126,15 +119,14 @@ class Board:
                 print()
                 print(
                     SGR.bg_red() + SGR.fg_white() +
-                    ' Invalid Input! Make sure that you enter the '
+                    ' Invalid Input! Make sure that you enter one '
                     + SGR.reset()
                 )
                 print(
                     SGR.bg_red() + SGR.fg_white() +
-                    ' size of board: from 5 to 8                  '
+                    ' of these options: 5, 6, 7 or 8              '
                     + SGR.reset()
                 )
-                print()
 
 class Human(Board):
     '''
@@ -228,4 +220,4 @@ def test():
     print(Board._board_size)
     print(Board._num_of_ships)
 
-test()
+main()

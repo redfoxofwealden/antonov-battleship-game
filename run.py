@@ -105,16 +105,17 @@ class Board:
         clear_screen()
         while True:
             try:
-                print(SGR.fg_yellow(), end='')
                 print(
-                    '\nEnter your choice for the size of board:'
+                    SGR.fg_yellow() +
+                    'Enter the following choices for the'
+                    '\nsize of board that you want:'
                     '\n 5 for 5 by 5 board;'
                     '\n 6 for 6 by 6 board;'
                     '\n 7 for 7 by 7 board;'
-                    '\n 8 for 8 by 8 board.'
+                    '\n 8 for 8 by 8 board.' +
+                    SGR.fg_default()
                 )
-                print(SGR.reset())
-                user_board_size = input('Enter your choice for the size of board:\n')
+                user_board_size = input('\nEnter your choice for the size of board:\n')
                 if int(user_board_size) > 4 and int(user_board_size) < 9:
                     Board.set_board_size(int(user_board_size))
                     break
@@ -122,10 +123,18 @@ class Board:
                     raise ValueError
             
             except ValueError:
-                print(SGR.bg_red() + SGR.fg_white() + '\n Invalid Input! Make sure that you enter the ' + SGR.reset())
-                print(SGR.bg_red() + SGR.fg_white() + ' appropiate size of board: from 5 to 8       ' + SGR.reset())
-                # print(SGR.fg_lt_red() + '\n Invalid Input! Make sure that you enter the ')
-                # print(' appropiate size of board: from 5 to 8       ' + SGR.fg_default())
+                print()
+                print(
+                    SGR.bg_red() + SGR.fg_white() +
+                    ' Invalid Input! Make sure that you enter the '
+                    + SGR.reset()
+                )
+                print(
+                    SGR.bg_red() + SGR.fg_white() +
+                    ' size of board: from 5 to 8                  '
+                    + SGR.reset()
+                )
+                print()
 
 class Human(Board):
     '''
@@ -163,7 +172,7 @@ class TitleMenu:
               \____/ \__,_|\__|\__|_|\___||___/_| |_|_| .__/|___/
                                                       | |        
                                                       |_|          
-    ''' + SGR.reset())
+    ''' + SGR.fg_default())
     
     @staticmethod
     def display_title():
@@ -172,20 +181,25 @@ class TitleMenu:
     @staticmethod
     def display_menu():
         print(SGR.fg_yellow() + str('Enter I for instructions,').center(80))
-        print(str('   or P to play the game.').center(80) + SGR.reset())
+        print(str('   or P to play the game.').center(80) + SGR.fg_default())
  
     @staticmethod
     def input_user_response():
         while True:
-            user_input = str(input('\nEnter your option\n')).lower()
-            if user_input == 'i' or user_input == 'p' \
-                or user_input == 'q':
+            user_input = str(input('\nEnter your option:\n')).lower()
+            if user_input == 'i' or user_input == 'p' or user_input == 'q':
                 return user_input
             else:
-                print('\n' + SGR.fg_white() + SGR.bg_red() + 
-                ' Invalid Input! Make sure you enter one of these options: ' + SGR.reset())
-                print(SGR.fg_white() + SGR.bg_red() + 
-                ' I for instructions, or P to play.                        ' + SGR.reset())
+                print(
+                    SGR.fg_white() + SGR.bg_red() +
+                    ' Invalid Input! Make sure you enter one of these options: ' +
+                    SGR.reset()
+                )
+                print(
+                    SGR.fg_white() + SGR.bg_red() +
+                    ' I for instructions, or P to play.                        ' +
+                    SGR.reset()
+                )
     
     @staticmethod
     def run():
@@ -214,4 +228,4 @@ def test():
     print(Board._board_size)
     print(Board._num_of_ships)
 
-test()
+main()

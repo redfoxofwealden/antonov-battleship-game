@@ -95,44 +95,13 @@ class SGR:
         print(str(str_argument), end='')
         print(fg_def_chars + bg_def_chars, end=endline)
 
-BOARD_OBJ_BLANK = 'Blank'
-BOARD_OBJ_SHIP = 'Ship'
-BOARD_OBJ_MISS = 'Miss'
-BOARD_OBJ_HIT = 'Hit'
-
 class Board:
     '''
-    Process players board position
+    Board class
     '''
-    def __init__(self, name, reveal_position):
-        self.name = str(name)
-        self.reveal_position = bool(reveal_position)
 
-    _BOARD_OBJECTS = (
-        {
-            'id': 0,
-            'label': BOARD_OBJ_BLANK,
-            'char': SGR.char('\u25CF', SGR.lt_grey())
-        },
-        {
-            'id': 1,
-            'label': BOARD_OBJ_SHIP,
-            'char': SGR.char('S', SGR.white())
-        },
-        {
-            'id': 2,
-            'label': BOARD_OBJ_MISS,
-            'char': ' '
-        },
-        {
-            'id': 3,
-            'label': BOARD_OBJ_HIT,
-            'char': SGR.char('\u2731', SGR.red())
-        }
-    )
-
-    _board_size = 0
-    _num_of_ships = 0
+    _board_size = 8
+    _num_of_ships = 12
 
     @staticmethod
     def set_board_size(size_board):
@@ -141,7 +110,7 @@ class Board:
     
     @staticmethod
     def user_select_board_size():
-        clear_screen()
+        clear_screen()        
         board_size_question = str(
             'What size of board do you want to play with?'
             '\nEnter one of the following choices:-'
@@ -166,21 +135,132 @@ class Board:
                 print()
                 SGR.print(' Invalid Input! Make sure that you enter one ', SGR.white(), SGR.red())
                 SGR.print(' of these options: 5, 6, 7 or 8              ', SGR.white(), SGR.red())
+    
+    _OBJ_BLANK = 'Blank'
+    _OBJ_SHIP = 'Ship'
+    _OBJ_MISS = 'Miss'
+    _OBJ_HIT = 'Hit'
+
+    _OBJECTS = (
+        {
+            'id': 0,
+            'label': _OBJ_BLANK,
+            'char': SGR.char('\u25CF ', SGR.lt_grey())
+        },
+        {
+            'id': 1,
+            'label': _OBJ_SHIP,
+            'char': SGR.char('S ', SGR.white())
+        },
+        {
+            'id': 2,
+            'label': _OBJ_MISS,
+            'char': '  '
+        },
+        {
+            'id': 3,
+            'label': _OBJ_HIT,
+            'char': SGR.char('\u2731 ', SGR.red())
+        }
+    )
+    
+    def __init__(self, name, reveal_position):
+        self.name = str(name)
+        self.reveal_position = bool(reveal_position)
+        self.board = []
+        self.hits = 0
+        self.misses = 0  
+        self._create_board()
+
+    def _get_obj_char_by_id(self, object_id):
+        for objs in Board._OBJECTS:
+            if objs['id'] == object_id:
+                return objs['char']
+
+    def _get_obj_id_by_label(self, object_label):
+        for objs in Board._OBJECTS:
+            if objs['label'] == object_label:
+                return objs['id']
+
+    def _create_board(self):
+        blank_space = self._get_obj_id_by_label(Board._OBJ_BLANK)
+        for row in range(Board._board_size):
+            list_column = []
+            for column in range(Board._board_size):
+                list_column.append(blank_space)
+            self.board.append(list_column)
+
+    def _position_cursor(self, row, column):
+        print(f'\x9B{row};{column}H', end='')
+
+    def _move_cursor_right(self, col_relative):
+        if int(col_relative) > 0:
+            print(f'\x9B{int(col_relative)}C', end='')
+        else:
+            return
+
+    def _get_str_row(self, list_row):
+        row_string = ' '
+        for board_object in list_row:
+            row_string += self._get_obj_char_by_id(board_object)
+        return row_string
+
+    def _display_board(self, row, column):
+        current_row = int(row)
+        for board_row in self.board:
+            self._position_cursor(current_row, int(column))
+            row_op_string = self._get_str_row(board_row)
+            SGR.print(row_op_string, SGR.white(), SGR.blue(), '')
+            current_row += 1
+        print()
+
+    def _display_column_header(self, col_relative):
+        self._move_cursor_right(col_relative)
+        chr_a = ord('A')
+        display_str = ''
+        for col in range(self._board_size):
+            display_str += chr(chr_a + col) + ' '
+        SGR.print(display_str, SGR.yellow())
+
+    def _display_row_header(self, col_relative):
+        for row in range(self._board_size):
+            self._move_cursor_right(col_relative)
+            SGR.print(str(row + 1).rjust(2), SGR.yellow())
+    
+    def _display_score(self, col_relative):
+        self._move_cursor_right(col_relative)
+        SGR.print(str(f'{self.name}\'s Scores'), SGR.yellow())
+        
+        self._move_cursor_right(col_relative)
+        SGR.print(str(f'Hits:   {self.hits}'), SGR.yellow())
+        
+        self._move_cursor_right(col_relative)
+        SGR.print(str(f'Misses: {self.misses}'), SGR.yellow())
+
+    def display(self, row, column):
+        self._position_cursor(row, 1)
+        self._display_score(column + 3)
+        print()
+        self._display_column_header(column + 3)
+        print()
+        self._display_row_header(column - 1)
+        self._display_board(row + 6, column + 3)
 
 class Human(Board):
     '''
     Human player
     '''
     def __init__(self, name):
-        super().__init__(self, name, True)
+        super().__init__(name, True)
+        pass
 
 class Computer(Board):
     '''
     Computer player
     '''
     def __init__(self):
-        super().__init__(self, 'Computer', False)
-
+        super().__init__('Computer', False)
+        pass
         
 class TitleMenu:
     '''
@@ -249,19 +329,21 @@ def main():
 
 def test():
     while True:
-        clear_screen()
-
-        print('Select one of the following:')
-        print('1. run main()')
-        print('2. rum test()')
-        print('q to quit.')
-        user_choice = input('Enter choice\n')
-        if user_choice == '1':
-            main()
-        elif user_choice == '2':
-            Board.user_select_board_size()
-        elif user_choice == 'q':
-            print('Done')
+        name = input('Enter your name (16 chars max):\n')
+        if len(name) < 17 and len(name) > 0:
             break
+
+    human_player = Human(name)
+    computer_player = Computer()
+
+    clear_screen()
+    SGR.print(str('Antonov Battleships').center(80), SGR.lt_green())
+
+    computer_player.display(3, 1)
+
+    human_player.display(3, 31)
+
+    print()    
+    print('Done.')
 
 test()

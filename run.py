@@ -1,5 +1,4 @@
 # Write your code to expect a terminal of 80 characters wide and 24 rows high
-
 def clear_screen(): 
         print('\x9B3J\x9B;H\x9B0J', end='')
 
@@ -9,44 +8,92 @@ class SGR:
     '''
 
     @staticmethod
-    def bg_blue():
-        return str('\x9B44m')
+    def black():
+        return 0
     
     @staticmethod
-    def bg_red():
-        return str('\x9B41m')
+    def red():
+        return 1
+
+    @staticmethod
+    def green():
+        return 2
+
+    @staticmethod
+    def yellow():
+        return 3
     
     @staticmethod
-    def fg_lt_green():
-        return str('\x9B92m')
+    def blue():
+        return 4
 
     @staticmethod
-    def fg_lt_red():
-        return str('\x9B91m')
+    def magenta():
+        return 5
 
     @staticmethod
-    def fg_white():
-        return str('\x9B97m')
+    def cyan():
+        return 6
 
     @staticmethod
-    def fg_yellow():
-        return str('\x9B33m')
+    def lt_grey():
+        return 7
 
     @staticmethod
-    def fg_lt_yellow():
-        return str('\x9B93m')
+    def grey():
+        return 8
 
     @staticmethod
-    def reset():
-        return str('\x9B0m')
+    def lt_red():
+        return 9
 
     @staticmethod
-    def bg_default():
-        return str('\x9B49m')
+    def lt_green():
+        return 10
+    
+    @staticmethod
+    def lt_yellow():
+        return 11
+    
+    @staticmethod
+    def lt_blue():
+        return 12
+    
+    @staticmethod
+    def lt_magenta():
+        return 13
+    
+    @staticmethod
+    def lt_cyan():
+        return 14
 
     @staticmethod
-    def fg_default():
-        return str('\x9B39m')
+    def white():
+        return 15
+
+    @staticmethod
+    def char(str_char_arg, fg_clr):
+        fg_clr_prm = (int(fg_clr) + 30) if int(fg_clr) < 8 else (int(fg_clr) + 82)
+        fg_chars = str(f'\x9B{fg_clr_prm}m')
+        return str(fg_chars + str(str_char_arg))
+
+    @staticmethod
+    def print(str_argument, fg_clr, bg_clr=None, endline='\n'):
+        fg_clr_prm = (int(fg_clr) + 30) if int(fg_clr) < 8 else (int(fg_clr) + 82)
+        fg_chars = str(f'\x9B{fg_clr_prm}m')
+        fg_def_chars = str('\x9B39m')
+
+        if bg_clr is not None:
+            bg_clr_prm = (int(bg_clr) + 40) if int(bg_clr) < 8 else (int(bg_clr) + 92)
+            bg_chars = str(f'\x9B{bg_clr_prm}m')
+            bg_def_chars = str('\x9B49m')
+        else:
+            bg_chars = ''
+            bg_def_chars = ''
+
+        print(fg_chars + bg_chars, end='')
+        print(str(str_argument), end='')
+        print(fg_def_chars + bg_def_chars, end=endline)
 
 BOARD_OBJ_BLANK = 'Blank'
 BOARD_OBJ_SHIP = 'Ship'
@@ -65,22 +112,22 @@ class Board:
         {
             'id': 0,
             'label': BOARD_OBJ_BLANK,
-            'char': str(SGR.fg_white() + '\u25CF')
+            'char': SGR.char('\u25CF', SGR.lt_grey())
         },
         {
             'id': 1,
             'label': BOARD_OBJ_SHIP,
-            'char': str(SGR.fg_white() + 'S')
+            'char': SGR.char('S', SGR.white())
         },
         {
             'id': 2,
             'label': BOARD_OBJ_MISS,
-            'char': str(SGR.fg_white() + ' ')
+            'char': ' '
         },
         {
             'id': 3,
             'label': BOARD_OBJ_HIT,
-            'char': str(SGR.fg_lt_red() + '\u2731')
+            'char': SGR.char('\u2731', SGR.red())
         }
     )
 
@@ -95,17 +142,17 @@ class Board:
     @staticmethod
     def user_select_board_size():
         clear_screen()
-        print(
-            SGR.fg_yellow() +
+        board_size_question = str(
             'What size of board do you want to play with?'
             '\nEnter one of the following choices:-'
             '\n'
             '\n 5 for 5 by 5 board with 5 ships;'
             '\n 6 for 6 by 6 board with 7 ships;'
             '\n 7 for 7 by 7 board with 9 ships;'
-            '\n 8 for 8 by 8 board with 12 ships.' +
-            SGR.fg_default()
+            '\n 8 for 8 by 8 board with 12 ships.'
         )
+        SGR.print(board_size_question, SGR.yellow())
+
         while True:
             try:
                 user_board_size = input('\nEnter your choice:\n')
@@ -117,16 +164,8 @@ class Board:
             
             except ValueError:
                 print()
-                print(
-                    SGR.bg_red() + SGR.fg_white() +
-                    ' Invalid Input! Make sure that you enter one '
-                    + SGR.reset()
-                )
-                print(
-                    SGR.bg_red() + SGR.fg_white() +
-                    ' of these options: 5, 6, 7 or 8              '
-                    + SGR.reset()
-                )
+                SGR.print(' Invalid Input! Make sure that you enter one ', SGR.white(), SGR.red())
+                SGR.print(' of these options: 5, 6, 7 or 8              ', SGR.white(), SGR.red())
 
 class Human(Board):
     '''
@@ -147,7 +186,7 @@ class TitleMenu:
     '''
     Displaying the title of the game.
     '''
-    _title_name = str(SGR.fg_lt_green() + r'''
+    _title_name = str(r'''
                       ___        _                         
                      / _ \      | |                        
                     / /_\ \_ __ | |_ ___  _ __   _____   __
@@ -164,16 +203,16 @@ class TitleMenu:
               \____/ \__,_|\__|\__|_|\___||___/_| |_|_| .__/|___/
                                                       | |        
                                                       |_|          
-    ''' + SGR.fg_default())
+    ''')
     
     @staticmethod
     def display_title():
-        print(TitleMenu._title_name)
+        SGR.print(TitleMenu._title_name, SGR.lt_green())
 
     @staticmethod
     def display_menu():
-        print(SGR.fg_yellow() + str('Enter I for instructions,').center(80))
-        print(str('   or P to play the game.').center(80) + SGR.fg_default())
+        SGR.print(str('Enter I for instructions,').center(80), SGR.yellow())
+        SGR.print(str('   or P to play the game.').center(80), SGR.yellow())
  
     @staticmethod
     def input_user_response():
@@ -182,16 +221,9 @@ class TitleMenu:
             if user_input == 'i' or user_input == 'p' or user_input == 'q':
                 return user_input
             else:
-                print(
-                    SGR.fg_white() + SGR.bg_red() +
-                    ' Invalid Input! Make sure you enter one of these options: ' +
-                    SGR.reset()
-                )
-                print(
-                    SGR.fg_white() + SGR.bg_red() +
-                    ' I for instructions, or P to play.                        ' +
-                    SGR.reset()
-                )
+                print()
+                SGR.print(' Invalid Input! Make sure you enter one of these options: ', SGR.white(), SGR.red())
+                SGR.print(' I for instructions, or P to play.                        ', SGR.white(), SGR.red())
     
     @staticmethod
     def run():
@@ -216,8 +248,20 @@ def main():
             return
 
 def test():
-    Board.user_select_board_size()
-    print(Board._board_size)
-    print(Board._num_of_ships)
+    while True:
+        clear_screen()
 
-main()
+        print('Select one of the following:')
+        print('1. run main()')
+        print('2. rum test()')
+        print('q to quit.')
+        user_choice = input('Enter choice\n')
+        if user_choice == '1':
+            main()
+        elif user_choice == '2':
+            Board.user_select_board_size()
+        elif user_choice == 'q':
+            print('Done')
+            break
+
+test()

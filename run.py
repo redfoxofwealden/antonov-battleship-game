@@ -1,4 +1,6 @@
 # Write your code to expect a terminal of 80 characters wide and 24 rows high
+import random
+
 def clear_screen(): 
         print('\x9B3J\x9B;H\x9B0J', end='')
 
@@ -100,18 +102,18 @@ class Board:
     Board class
     '''
 
-    _board_size = 8
-    _num_of_ships = 12
+    _board_size = 5
+    _number_of_ships = 5
 
     @staticmethod
-    def set_board_size(size_board):
+    def _set_board_size(size_board):
         Board._board_size = int(size_board)
         Board._num_of_ships = int(Board._board_size * Board._board_size / 5)
     
     @staticmethod
-    def user_select_board_size():
+    def player_select_board_size():
         clear_screen()        
-        board_size_question = str(
+        SGR.print(str(
             'What size of board do you want to play with?'
             '\nEnter one of the following choices:-'
             '\n'
@@ -119,14 +121,13 @@ class Board:
             '\n 6 for 6 by 6 board with 7 ships;'
             '\n 7 for 7 by 7 board with 9 ships;'
             '\n 8 for 8 by 8 board with 12 ships.'
-        )
-        SGR.print(board_size_question, SGR.yellow())
+        ), SGR.yellow())
 
         while True:
             try:
                 user_board_size = input('\nEnter your choice:\n')
                 if int(user_board_size) > 4 and int(user_board_size) < 9:
-                    Board.set_board_size(int(user_board_size))
+                    Board._set_board_size(int(user_board_size))
                     break
                 else:
                     raise ValueError
@@ -164,13 +165,15 @@ class Board:
         }
     )
     
-    def __init__(self, name, reveal_position):
+    def __init__(self, name, reveal_ships):
         self.name = str(name)
-        self.reveal_position = bool(reveal_position)
+        self.reveal_ships = bool(reveal_ships)
         self.board = []
         self.hits = 0
-        self.misses = 0  
+        self.misses = 0
+        self.num_ships = self._number_of_ships
         self._create_board()
+        self._position_ships()
 
     def _get_obj_char_by_id(self, object_id):
         for objs in Board._OBJECTS:
@@ -189,6 +192,26 @@ class Board:
             for column in range(Board._board_size):
                 list_column.append(blank_space)
             self.board.append(list_column)
+    
+    def _position_ships(self):
+        ship = self._get_obj_id_by_label(Board._OBJ_SHIP)
+        blank = self._get_obj_char_by_id(Board._OBJ_BLANK)
+        count = self._number_of_ships
+
+        while count > 0:
+            random_num = random.randrange(
+                int(Board._board_size * Board._board_size))
+            row = random_num // Board._board_size
+            column = random_num % Board._board_size
+
+            print(str(row), str(column))
+
+            value = self.board[row][column]
+            if value == blank:
+                self.board[row][column] = ship
+                count -= 1
+            else:
+                continue
 
     def _position_cursor(self, row, column):
         print(f'\x9B{row};{column}H', end='')
@@ -222,19 +245,20 @@ class Board:
             display_str += chr(chr_a + col) + ' '
         SGR.print(display_str, SGR.yellow())
 
-    def _display_row_header(self, col_relative):
+    def _display_row_header(self, column_relative):
         for row in range(self._board_size):
-            self._move_cursor_right(col_relative)
+            self._move_cursor_right(column_relative)
             SGR.print(str(row + 1).rjust(2), SGR.yellow())
     
-    def _display_score(self, col_relative):
-        self._move_cursor_right(col_relative)
-        SGR.print(str(f'{self.name}\'s Scores'), SGR.yellow())
+    def _display_score(self, column_relative):
+        self._move_cursor_right(column_relative)
+        SGR.print(str(f'{self.name}'), SGR.yellow())
+        print()
         
-        self._move_cursor_right(col_relative)
+        self._move_cursor_right(column_relative)
         SGR.print(str(f'Hits:   {self.hits}'), SGR.yellow())
         
-        self._move_cursor_right(col_relative)
+        self._move_cursor_right(column_relative)
         SGR.print(str(f'Misses: {self.misses}'), SGR.yellow())
 
     def display(self, row, column):
@@ -244,7 +268,10 @@ class Board:
         self._display_column_header(column + 3)
         print()
         self._display_row_header(column - 1)
-        self._display_board(row + 6, column + 3)
+        self._display_board(row + 7, column + 3)
+
+    def num_of_ships_remaining(self):
+        return self.ships_remaining
 
 class Human(Board):
     '''
@@ -252,14 +279,29 @@ class Human(Board):
     '''
     def __init__(self, name):
         super().__init__(name, True)
+        self.quit = None
+        self.row = 0
+        self.column = 0
+        print('check')
+
+    def get_coord_quit(self):
         pass
+
+    def exec(self, opponent):
+        pass
+
+    def continue_playing(self):
+        return self.quit
 
 class Computer(Board):
     '''
     Computer player
     '''
     def __init__(self):
-        super().__init__('Computer', False)
+        super().__init__('Computer', True)
+        pass
+
+    def exec(self, opponent):
         pass
         
 class TitleMenu:
@@ -306,44 +348,115 @@ class TitleMenu:
                 SGR.print(' I for instructions, or P to play.                        ', SGR.white(), SGR.red())
     
     @staticmethod
-    def run():
+    def title_select_option():
         clear_screen()
         TitleMenu.display_title()
         TitleMenu.display_menu()
         user_response = TitleMenu.input_user_response()
         return user_response
 
+class Game:
+    '''
+    Game class
+    '''
+    @staticmethod
+    def _get_player_name():
+        MAX_LENGTH = 16
+
+        clear_screen()
+        SGR.print('What\'s your name?', SGR.yellow())
+        print()
+        while True:
+            name_plyr = str(input(str(
+                f'Enter your name (max. {MAX_LENGTH} characters):\n'
+            )))
+
+            if len(name_plyr) == 0:
+                print()
+                SGR.print('Sorry I didn\'t get your name.', SGR.yellow())
+                SGR.print('Make sure that you enter your name below.', SGR.yellow())
+                print()
+            elif len(name_plyr) > MAX_LENGTH:
+                print()
+                SGR.print('Sorry the max characters that', SGR.yellow())
+                SGR.print(str(f'you can input is {MAX_LENGTH}.'), SGR.yellow())
+                print()
+            else:
+                return name_plyr
+
+    @staticmethod
+    def _display_congratulations():
+        pass
+
+    @staticmethod
+    def _display_commiserations():
+        pass
+
+    @staticmethod
+    def _display_key_info():
+        pass
+
+    @staticmethod
+    def _play(human_player, computer_player):
+        return 'exit'
+        # human_player.get_coord_quit()
+        # human_player.exec(computer_player)
+        # computer_player.exec(human_player)
+        # return human_player.continue_playing()
+
+    @staticmethod
+    def play_battleship():
+        Board.player_select_board_size()
+
+        player_name = Game._get_player_name()
+
+        print(player_name)
+        
+        human_player = Human(player_name)
+        print('check')
+        computer_player = Computer()
+
+        while True:
+            clear_screen()
+            computer_player.display(1, 1)
+            human_player.display(1, 31)
+
+            Game._display_key_info()
+            game_status = Game._play(human_player, computer_player)
+
+            if game_status == 'human won':
+                Game._display_congratulations()
+                game_status = 'exit'
+
+            elif game_status == 'computer won':
+                Game._display_commiserations()
+                game_status = 'exit'
+
+            elif game_status == 'exit':
+                input('Press Enter to continue:\n')
+                del human_player
+                del computer_player
+                return
+                
+            else:
+                continue
+
+
 def main():
+    random.seed()
     while True:
-        user_option_select = TitleMenu.run()
+        user_option_select = TitleMenu.title_select_option()
         if user_option_select == 'i':
             print('Feature not yet implemented')
             input('Press enter to continue:\n')
 
         elif user_option_select == 'p':
-            print('Feature not yet implemented')
-            input('Press enter to continue:\n')
+            Game.play_battleship()
 
         elif user_option_select == 'q':
             return
 
 def test():
-    while True:
-        name = input('Enter your name (16 chars max):\n')
-        if len(name) < 17 and len(name) > 0:
-            break
+    pass
 
-    human_player = Human(name)
-    computer_player = Computer()
-
-    clear_screen()
-    SGR.print(str('Antonov Battleships').center(80), SGR.lt_green())
-
-    computer_player.display(3, 1)
-
-    human_player.display(3, 31)
-
-    print()    
-    print('Done.')
-
-test()
+main()

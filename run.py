@@ -2,7 +2,7 @@
 import random
 
 def clear_screen(): 
-        print('\x9B3J\x9B;H\x9B0J', end='')
+        print('\x9B0m\x9B3J\x9B;H\x9B0J', end='')
 
 class SGR:
     '''
@@ -108,7 +108,7 @@ class Board:
     @staticmethod
     def _set_board_size(size_board):
         Board._board_size = int(size_board)
-        Board._num_of_ships = int(Board._board_size * Board._board_size / 5)
+        Board._number_of_ships = int(Board._board_size * Board._board_size / 5)
     
     @staticmethod
     def player_select_board_size():
@@ -146,12 +146,12 @@ class Board:
         {
             'id': 0,
             'label': _OBJ_BLANK,
-            'char': SGR.char('\u25CF ', SGR.lt_grey())
+            'char': SGR.char('\u25CF ', SGR.grey())
         },
         {
             'id': 1,
             'label': _OBJ_SHIP,
-            'char': SGR.char('S ', SGR.white())
+            'char': SGR.char('S ', SGR.black())
         },
         {
             'id': 2,
@@ -195,7 +195,7 @@ class Board:
     
     def _position_ships(self):
         ship = self._get_obj_id_by_label(Board._OBJ_SHIP)
-        blank = self._get_obj_char_by_id(Board._OBJ_BLANK)
+        blank = self._get_obj_id_by_label(Board._OBJ_BLANK)
         count = self._number_of_ships
 
         while count > 0:

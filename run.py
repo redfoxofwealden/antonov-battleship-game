@@ -151,7 +151,7 @@ class Board:
         {
             'id': 1,
             'label': _OBJ_SHIP,
-            'char': SGR.char('S ', SGR.white())
+            'char': SGR.char('S ', SGR.black())
         },
         {
             'id': 2,
@@ -171,9 +171,18 @@ class Board:
         self.board = []
         self.hits = 0
         self.misses = 0
-        self.num_ships = self._number_of_ships
+        self.num_ships_remaining = self._number_of_ships
+        self.previous_message = ''
+        self.previous_chosen_coord = []
         self._create_board()
         self._position_ships()
+
+    def _check_coord_picked(self, row, column):
+        for element in self.previous_chosen_coord:
+            if element[0] == row and element[1] == column:
+                return True
+            
+        return False
 
     def _get_obj_char_by_id(self, object_id):
         for objs in Board._OBJECTS:
@@ -187,16 +196,20 @@ class Board:
 
     def _create_board(self):
         obj_blank = self._get_obj_id_by_label(Board._OBJ_BLANK)
-        for row in range(Board._board_size):
+        count_1 = Board._board_size
+        while count_1 > 0:
             list_column = []
-            for column in range(Board._board_size):
+            count_2 = Board._board_size
+            while count_2 > 0:
                 list_column.append(obj_blank)
+                count_2 -= 1
             self.board.append(list_column)
-    
+            count_1 -= 1
+
     def _position_ships(self):
         ship = self._get_obj_id_by_label(Board._OBJ_SHIP)
         blank = self._get_obj_id_by_label(Board._OBJ_BLANK)
-        count = self._number_of_ships
+        count = Board._number_of_ships
 
         while count > 0:
             random_num = random.randrange(
@@ -214,9 +227,9 @@ class Board:
     def _position_cursor(self, row, column):
         print(f'\x9B{row};{column}H', end='')
 
-    def _move_cursor_right(self, col_relative):
-        if int(col_relative) > 0:
-            print(f'\x9B{int(col_relative)}C', end='')
+    def _move_cursor_right(self, column_relative):
+        if int(column_relative) > 0:
+            print(f'\x9B{int(column_relative)}C', end='')
         else:
             return
 
@@ -225,27 +238,37 @@ class Board:
         obj_blank_char = self._get_obj_char_by_id(obj_blank)
         obj_ship = self._get_obj_id_by_label(Board._OBJ_SHIP)
         obj_ship_char = self._get_obj_char_by_id(obj_ship)
+        obj_miss = self._get_obj_id_by_label(Board._OBJ_MISS)
+        obj_miss_char = self._get_obj_char_by_id(obj_miss)
+        obj_hit = self._get_obj_id_by_label(Board._OBJ_HIT)
+        obj_hit_char = self._get_obj_char_by_id(obj_hit)
 
         row_string = ' '
-        for board_object in list_row:
-            if board_object == obj_blank:
+        for column_count in range(Board._board_size):
+            if list_row[column_count] == obj_blank:
                 row_string += obj_blank_char
-            elif board_object == obj_ship:
+            elif list_row[column_count] == obj_ship:
                 row_string += obj_ship_char if self.reveal_ships else obj_blank_char
+            elif list_row[column_count] == obj_miss:
+                row_string += obj_miss_char
+            elif list_row[column_count] == obj_hit:
+                row_string += obj_hit_char
+            else:
+                raise Exception('An error has occured in _get_str_row().')
         
         return row_string
 
     def _display_board(self, row, column):
         current_row = int(row)
-        for board_row in self.board:
-            self._position_cursor(current_row, int(column))
-            row_op_string = self._get_str_row(board_row)
+        for row_count in range(Board._board_size):
+            self._position_cursor(current_row, column)
+            row_op_string = self._get_str_row(self.board[row_count])
             SGR.print(row_op_string, SGR.white(), SGR.blue(), '')
             current_row += 1
         print()
 
-    def _display_column_header(self, col_relative):
-        self._move_cursor_right(col_relative)
+    def _display_column_header(self, column_relative):
+        self._move_cursor_right(column_relative)
         chr_a = ord('A')
         display_str = ''
         for col in range(self._board_size):
@@ -268,6 +291,39 @@ class Board:
         self._move_cursor_right(column_relative)
         SGR.print(str(f'Misses: {self.misses}'), SGR.yellow())
 
+    def _strike(self, row_select, column_select):
+        '''
+        returns either Hit or Miss depending
+        on whether the ship has been struck or not
+        '''
+
+        id_value = self.board[row_select][column_select]
+
+        if id_value == self._get_obj_id_by_label(Board._OBJ_SHIP):
+            self.board[row_select][column_select] = self._get_obj_id_by_label(Board._OBJ_HIT)
+            self.num_ships_remaining -= 1
+            exit_message = 'Hit'
+
+        elif id_value == self._get_obj_id_by_label(Board._OBJ_BLANK):
+            self.board[row_select][column_select] = self._get_obj_id_by_label(Board._OBJ_MISS)
+            exit_message = 'Miss'
+
+        else:
+            raise Exception('An error has occured during call to strike()')
+        
+        return exit_message
+
+    def _strike_object(self, opponent, row, column):
+        strike_status = opponent._strike(row, column)
+        if strike_status == 'Hit':
+            self.previous_message = 'Hit'
+            self.hits += 1
+        elif strike_status == 'Miss':
+            self.previous_message = 'Miss'
+            self.misses += 1
+        else:
+            raise Exception('Return from strike() has to be Hit or Miss.')
+
     def display(self, row, column):
         self._position_cursor(row, 1)
         self._display_score(column + 3)
@@ -277,8 +333,20 @@ class Board:
         self._display_row_header(column - 1)
         self._display_board(row + 7, column + 3)
 
-    def num_of_ships_remaining(self):
-        return self.num_ships
+    def get_message_previous(self):
+        if self.previous_message == 'Hit':
+            previous_message = str(f'{self.name} has achieved a hit')
+        elif self.previous_message == 'Miss':
+            previous_message = str(f'{self.name} has missed')
+        elif self.previous_message == '':
+            previous_message = ''
+        else:
+            raise Exception('An error has occured in get_message_previous()')
+        
+        return previous_message
+
+    def has_ships(self):
+        return True if self.num_ships_remaining > 0 else False
 
 class Human(Board):
     '''
@@ -286,10 +354,38 @@ class Human(Board):
     '''
     def __init__(self, name):
         super().__init__(name, True)
-        self.quit = False
-        self.row_user_select = 0
-        self.column_user_select = 0
- 
+        self.continue_play_game = True
+        self.row_user_select = -1
+        self.column_user_select = -1
+
+    def _parse_input(self, coordinates):
+        parse_chars = [char for char in coordinates]
+
+        first_column = ord(parse_chars[0]) - ord('A')
+        if first_column > -1 and first_column < Board._board_size:
+            second_row = ord(parse_chars[1]) - ord('1')
+            if second_row > -1 and second_row < Board._board_size:
+                bool_already_picked = self._check_coord_picked(second_row, first_column)
+                if bool_already_picked:
+                    exit_msg = 'Chosen'
+
+                else:
+                    self.column_user_select = first_column
+                    self.row_user_select = second_row
+
+                    list_coord = []
+                    list_coord.append(second_row)
+                    list_coord.append(first_column)
+                    self.previous_chosen_coord.append(list_coord)
+                    exit_msg = 'OK'
+            else:
+                exit_msg = 'Invalid'
+        
+        else:
+            exit_msg = 'Invalid'
+
+        return exit_msg
+
     def get_coord_quit(self):
         ord_A = int(ord('A'))
         ord_nought = int(ord('1'))
@@ -304,49 +400,43 @@ class Human(Board):
         SGR.print('Or if you wish to exit, enter q or quit.', SGR.yellow())
         print()
         while True:
-            try:
-                choice = str(input('Enter your choice:\n')).replace(' ', '').upper()
- 
-                if choice == 'Q' or choice == 'QUIT':
-                    self.quit = True
-                    return
+            choice = str(input('Enter your choice:\n')).replace(' ', '').upper()
 
-                elif len(choice) == int(2):
-                    self._parse_input(choice)
-                    return
+            if choice == 'Q' or choice == 'QUIT':
+                self.continue_play_game = False
+                return
 
-                else:
-                    raise ValueError
+            elif len(choice) == int(2):
+                parse_status = self._parse_input(choice)
 
-            except ValueError:
+            else:
+                parse_status = 'Invalid'
+
+            if parse_status == 'OK':
+                return
+            
+            elif parse_status == 'Invalid':
                 print()
                 SGR.print(' Invalid Input!                          ', SGR.white(), SGR.red())
                 SGR.print(' Make sure you enter valid co-ordinates. ', SGR.white(), SGR.red())
                 SGR.print(' Or enter q or quit to exit.             ', SGR.white(), SGR.red())
 
-            except Exception:
+            elif parse_status == 'Chosen':
                 print()
-                SGR.print(' Co-ordinates out of range!                   ', SGR.black(), SGR.lt_grey())
-                SGR.print(' Make sure that you enter valid co-ordinates. ', SGR.black(), SGR.lt_grey())
-                SGR.print(str(' ' + msg_line + str(' ' * 18)), SGR.black(), SGR.white())
+                SGR.print(' These co-ordinates have been already chosen. ', SGR.black(), SGR.lt_grey())
+                SGR.print(' Enter another one.                           ', SGR.black(), SGR.lt_grey())
 
+            else:
+                raise Exception('An error has occured in get_coord_quit()')
+ 
     def exec(self, opponent):
-        pass
-
-    def _parse_input(self, coordinates):
-        parse_chars = [char for char in coordinates]
-
-        first_column = ord(parse_chars[0]) - ord('A')
-        second_row = ord(parse_chars[1]) - ord('1')
-        if first_column > -1 and first_column < Board._board_size:
-            self.column_user_select = first_column
-        elif second_row > -1 and second_row <  Board._board_size:
-            self.row_user_select = second_row
+        if self.row_user_select == -1 or self.column_user_select == -1:
+            raise Exception('get_coord_quit() has to be called first before calling this function.')
         else:
-            raise Exception
+            self._strike_object(opponent, self.row_user_select, self.column_user_select)
 
     def continue_playing(self):
-        return self.quit
+        return self.continue_play_game
 
 class Computer(Board):
     '''
@@ -356,8 +446,38 @@ class Computer(Board):
         super().__init__('Computer', False)
         pass
 
+    def _generate_random_coord(self):
+        rand_param = []
+        rand_param.append(random.randrange(Board._board_size))
+        rand_param.append(random.randrange(Board._board_size))
+        return rand_param
+
+    def coord_already_picked(self, row_check, column_check):
+        obj_miss_id = self._get_obj_id_by_label(Board._OBJ_MISS)
+        obj_hit_id = self._get_obj_id_by_label(Board._OBJ_HIT)
+
+        if self.board[row_check][column_check] == obj_miss_id:
+            bool_status = True
+
+        elif self.board[row_check][column_check] == obj_hit_id:
+            bool_status = True
+
+        else:
+            bool_status = False
+
+        return bool_status
+        
     def exec(self, opponent):
-        pass
+        while True:
+            row, column = self._generate_random_coord()
+            if self._check_coord_picked(row, column) == False:
+                list_coord = []
+                list_coord.append(row)
+                list_coord.append(column)
+                self.previous_chosen_coord.append(list_coord)
+                break
+
+        self._strike_object(opponent, row, column)
         
 class TitleMenu:
     '''
@@ -389,26 +509,35 @@ class TitleMenu:
     @staticmethod
     def display_menu():
         SGR.print(str('Enter I for instructions,').center(80), SGR.yellow())
-        SGR.print(str('   or P to play the game.').center(80), SGR.yellow())
+        SGR.print(str('   or P to play the game,').center(80), SGR.yellow())
+        SGR.print(str('   or Q to exit.         ').center(80), SGR.yellow())
  
     @staticmethod
-    def input_user_response():
+    def input_user_option_select():
         while True:
-            user_input = str(input('\nEnter your option:\n')).lower()
-            if user_input == 'i' or user_input == 'p' or user_input == 'q':
-                return user_input
+            user_option = str(input('\nEnter your option:\n')).lower()
+            if user_option == 'i':
+                break
+
+            elif user_option == 'p':
+                break
+
+            elif user_option == 'q':
+                break
+
             else:
                 print()
                 SGR.print(' Invalid Input! Make sure you enter one of these options: ', SGR.white(), SGR.red())
-                SGR.print(' I for instructions, or P to play.                        ', SGR.white(), SGR.red())
-    
+                SGR.print(' I for instructions, P to play, or Q to exit.             ', SGR.white(), SGR.red())
+
+        return user_option
+        
     @staticmethod
     def title_select_option():
         clear_screen()
         TitleMenu.display_title()
         TitleMenu.display_menu()
-        user_response = TitleMenu.input_user_response()
-        return user_response
+        return TitleMenu.input_user_option_select()
 
 class Game:
     '''
@@ -448,15 +577,36 @@ class Game:
         pass
 
     @staticmethod
-    def _display_key_info():
-        pass
+    def _display_previous_message(human_player, computer_player):
+        message_human = human_player.get_message_previous()
+        message_computer = computer_player.get_message_previous()
+
+        if message_human == '' or message_computer == '':
+            return
+        else:
+            print()
+            previous_message = str(f'Previous round: {message_human}; {message_computer}')
+            SGR.print(previous_message, SGR.yellow())
 
     @staticmethod
     def _play(human_player, computer_player):
+        exit_status = None
+
         human_player.get_coord_quit()
-        human_player.exec(computer_player)
-        computer_player.exec(human_player)
-        return human_player.continue_playing()
+        if human_player.continue_playing():
+            human_player.exec(computer_player)
+            if computer_player.has_ships():
+                computer_player.exec(human_player)
+                if human_player.has_ships():
+                    exit_status = ''
+                else:
+                    exit_status = 'computer won'
+            else:
+                exit_status = 'human won'
+        else:
+            exit_status = 'exit'
+        
+        return exit_status
 
     @staticmethod
     def play_battleship():
@@ -471,7 +621,7 @@ class Game:
             computer_player.display(1, 1)
             human_player.display(1, 31)
 
-            Game._display_key_info()
+            Game._display_previous_message(human_player, computer_player)
             game_status = Game._play(human_player, computer_player)
 
             if game_status == 'human won':
@@ -483,7 +633,6 @@ class Game:
                 game_status = 'exit'
 
             if game_status == 'exit':
-                input('Press Enter to continue:\n')
                 del human_player
                 del computer_player
                 return 
@@ -506,16 +655,6 @@ def main():
             return
 
 def test():
-    while True:
-        clear_screen()
-        human_player = Human('John')
-        human_player.get_coord_quit()
+    pass
 
-        print()
-        exit_string = input('exit ?\n')
-        if exit_string == 'q':
-            return
-        else:
-            continue
-
-test()
+main()

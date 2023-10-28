@@ -306,13 +306,12 @@ class Human(Board):
         while True:
             try:
                 choice = str(input('Enter your choice:\n')).replace(' ', '').upper()
-                length_choice = int(len(choice))
-
+ 
                 if choice == 'Q' or choice == 'QUIT':
                     self.quit = True
                     return
 
-                elif length_choice == 2:
+                elif len(choice) == int(2):
                     self._parse_input(choice)
                     return
 
@@ -327,19 +326,16 @@ class Human(Board):
 
             except Exception:
                 print()
-                SGR.print(' Co-ordinates out of range!                  ', SGR.yellow(), SGR.lt_grey())
-                SGR.print(' Make sure that you enter valid co-ordinate. ', SGR.yellow(), SGR.lt_grey())
-
-            finally:
-                continue
+                SGR.print(' Co-ordinates out of range!                   ', SGR.black(), SGR.lt_grey())
+                SGR.print(' Make sure that you enter valid co-ordinates. ', SGR.black(), SGR.lt_grey())
+                SGR.print(str(' ' + msg_line + str(' ' * 18)), SGR.black(), SGR.white())
 
     def exec(self, opponent):
         pass
 
     def _parse_input(self, coordinates):
-        parse_chars = coordinates.split('')
+        parse_chars = [char for char in coordinates]
 
-        print('check')
         first_column = ord(parse_chars[0]) - ord('A')
         second_row = ord(parse_chars[1]) - ord('1')
         if first_column > -1 and first_column < Board._board_size:

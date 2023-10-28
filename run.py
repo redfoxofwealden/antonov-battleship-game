@@ -2,7 +2,7 @@
 import random
 
 def clear_screen(): 
-        print('\x9B0m\x9B3J\x9B;H\x9B0J', end='')
+        print('\x9B3J\x9B;H\x9B0J', end='')
 
 class SGR:
     '''
@@ -146,12 +146,12 @@ class Board:
         {
             'id': 0,
             'label': _OBJ_BLANK,
-            'char': SGR.char('\u25CF ', SGR.grey())
+            'char': SGR.char('\u25CF ', SGR.lt_grey())
         },
         {
             'id': 1,
             'label': _OBJ_SHIP,
-            'char': SGR.char('S ', SGR.black())
+            'char': SGR.char('S ', SGR.white())
         },
         {
             'id': 2,
@@ -186,11 +186,11 @@ class Board:
                 return objs['id']
 
     def _create_board(self):
-        blank_space = self._get_obj_id_by_label(Board._OBJ_BLANK)
+        obj_blank = self._get_obj_id_by_label(Board._OBJ_BLANK)
         for row in range(Board._board_size):
             list_column = []
             for column in range(Board._board_size):
-                list_column.append(blank_space)
+                list_column.append(obj_blank)
             self.board.append(list_column)
     
     def _position_ships(self):
@@ -203,8 +203,6 @@ class Board:
                 int(Board._board_size * Board._board_size))
             row = random_num // Board._board_size
             column = random_num % Board._board_size
-
-            print(str(row), str(column))
 
             value = self.board[row][column]
             if value == blank:
@@ -223,9 +221,18 @@ class Board:
             return
 
     def _get_str_row(self, list_row):
+        obj_blank = self._get_obj_id_by_label(Board._OBJ_BLANK)
+        obj_blank_char = self._get_obj_char_by_id(obj_blank)
+        obj_ship = self._get_obj_id_by_label(Board._OBJ_SHIP)
+        obj_ship_char = self._get_obj_char_by_id(obj_ship)
+
         row_string = ' '
         for board_object in list_row:
-            row_string += self._get_obj_char_by_id(board_object)
+            if board_object == obj_blank:
+                row_string += obj_blank_char
+            elif board_object == obj_ship:
+                row_string += obj_ship_char if self.reveal_ships else obj_blank_char
+        
         return row_string
 
     def _display_board(self, row, column):
@@ -271,7 +278,7 @@ class Board:
         self._display_board(row + 7, column + 3)
 
     def num_of_ships_remaining(self):
-        return self.ships_remaining
+        return self.num_ships
 
 class Human(Board):
     '''
@@ -279,16 +286,68 @@ class Human(Board):
     '''
     def __init__(self, name):
         super().__init__(name, True)
-        self.quit = None
-        self.row = 0
-        self.column = 0
-        print('check')
-
+        self.quit = False
+        self.row_user_select = 0
+        self.column_user_select = 0
+ 
     def get_coord_quit(self):
-        pass
+        ord_A = int(ord('A'))
+        ord_nought = int(ord('1'))
+
+        print()
+        SGR.print('Enter your co-ordinates in the column row format', SGR.yellow())
+        SGR.print('For example to enter column C row 4, enter C4.', SGR.yellow())
+        msg_line = str(f'From A to {chr(self._board_size - 1 + ord_A)} and')
+        msg_line += str(f' from 1 to {chr(self._board_size - 1 + ord_nought)}')
+        SGR.print(msg_line, SGR.yellow())
+        print()
+        SGR.print('Or if you wish to exit, enter q or quit.', SGR.yellow())
+        print()
+        while True:
+            try:
+                choice = str(input('Enter your choice:\n')).replace(' ', '').upper()
+                length_choice = int(len(choice))
+
+                if choice == 'Q' or choice == 'QUIT':
+                    self.quit = True
+                    return
+
+                elif length_choice == 2:
+                    self._parse_input(choice)
+                    return
+
+                else:
+                    raise ValueError
+
+            except ValueError:
+                print()
+                SGR.print(' Invalid Input!                          ', SGR.white(), SGR.red())
+                SGR.print(' Make sure you enter valid co-ordinates. ', SGR.white(), SGR.red())
+                SGR.print(' Or enter q or quit to exit.             ', SGR.white(), SGR.red())
+
+            except Exception:
+                print()
+                SGR.print(' Co-ordinates out of range!                  ', SGR.yellow(), SGR.lt_grey())
+                SGR.print(' Make sure that you enter valid co-ordinate. ', SGR.yellow(), SGR.lt_grey())
+
+            finally:
+                continue
 
     def exec(self, opponent):
         pass
+
+    def _parse_input(self, coordinates):
+        parse_chars = coordinates.split('')
+
+        print('check')
+        first_column = ord(parse_chars[0]) - ord('A')
+        second_row = ord(parse_chars[1]) - ord('1')
+        if first_column > -1 and first_column < Board._board_size:
+            self.column_user_select = first_column
+        elif second_row > -1 and second_row <  Board._board_size:
+            self.row_user_select = second_row
+        else:
+            raise Exception
 
     def continue_playing(self):
         return self.quit
@@ -298,7 +357,7 @@ class Computer(Board):
     Computer player
     '''
     def __init__(self):
-        super().__init__('Computer', True)
+        super().__init__('Computer', False)
         pass
 
     def exec(self, opponent):
@@ -398,22 +457,17 @@ class Game:
 
     @staticmethod
     def _play(human_player, computer_player):
-        return 'exit'
-        # human_player.get_coord_quit()
-        # human_player.exec(computer_player)
-        # computer_player.exec(human_player)
-        # return human_player.continue_playing()
+        human_player.get_coord_quit()
+        human_player.exec(computer_player)
+        computer_player.exec(human_player)
+        return human_player.continue_playing()
 
     @staticmethod
     def play_battleship():
         Board.player_select_board_size()
-
         player_name = Game._get_player_name()
-
-        print(player_name)
         
         human_player = Human(player_name)
-        print('check')
         computer_player = Computer()
 
         while True:
@@ -432,15 +486,14 @@ class Game:
                 Game._display_commiserations()
                 game_status = 'exit'
 
-            elif game_status == 'exit':
+            if game_status == 'exit':
                 input('Press Enter to continue:\n')
                 del human_player
                 del computer_player
-                return
-                
+                return 
+
             else:
                 continue
-
 
 def main():
     random.seed()
@@ -457,6 +510,16 @@ def main():
             return
 
 def test():
-    pass
+    while True:
+        clear_screen()
+        human_player = Human('John')
+        human_player.get_coord_quit()
 
-main()
+        print()
+        exit_string = input('exit ?\n')
+        if exit_string == 'q':
+            return
+        else:
+            continue
+
+test()

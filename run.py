@@ -335,7 +335,7 @@ class Board:
 
     def get_message_previous(self):
         if self.previous_message == 'Hit':
-            previous_message = str(f'{self.name} has achieved a hit')
+            previous_message = str(f'{self.name} has hit')
         elif self.previous_message == 'Miss':
             previous_message = str(f'{self.name} has missed')
         elif self.previous_message == '':
@@ -600,27 +600,28 @@ class Game:
         current_row += 2
 
         self._position_cursor(current_row, int(column))        
-        SGR.print('Key Information', SGR.yellow(), None, '')
+        SGR.print('Information', SGR.yellow(), None, '')
         current_row += 2
-
-        self._position_cursor(current_row, int(column))        
-        SGR.print('To enter the coordinates in the format column row', SGR.yellow(), None, '')
+        
+        # print(  '                                 ')
+        self._position_cursor(current_row, int(column))
+        SGR.print('To enter the coordinates, enter', SGR.yellow(), None, '')
         current_row += 1
 
         self._position_cursor(current_row, int(column))        
-        SGR.print('enter the column letter followed by the row number.', SGR.yellow(), None, '')
+        SGR.print('the column letter, then row', SGR.yellow(), None, '')
         current_row += 1
 
         self._position_cursor(current_row, int(column))        
-        SGR.print('For example to enter the coordinates column C, row 4,', SGR.yellow(), None, '')
+        SGR.print('number. For e.g. to enter column', SGR.yellow(), None, '')
         current_row += 1
-
-        self._position_cursor(current_row, int(column))        
-        SGR.print('enter C4 and then return.', SGR.yellow(), None, '')
+        
+        self._position_cursor(current_row, int(column))
+        SGR.print('C, row 4 enter C4.', SGR.yellow(), None, '')
         current_row += 2
 
         self._position_cursor(current_row, int(column))
-        SGR.print('To exit the game enter q or quit.', SGR.yellow(), None, '')
+        SGR.print('To exit, enter q or quit.', SGR.yellow(), None, '')
         print()
 
     def _play(self):
@@ -666,15 +667,6 @@ class Game:
 
             else:
                 continue
-
-    def _position_cursor(self, row, column):
-        print(f'\x9B{row};{column}H', end='')
-
-    def _move_cursor_right(self, column_relative):
-        if int(column_relative) > 0:
-            print(f'\x9B{int(column_relative)}C', end='')
-        else:
-            return
 
     def _position_cursor(self, row, column):
         print(f'\x9B{row};{column}H', end='')

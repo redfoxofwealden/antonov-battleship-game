@@ -444,7 +444,7 @@ class Computer(Board):
     '''
     def __init__(self):
         super().__init__('Computer', False)
-        pass
+        # pass
 
     def _generate_random_coord(self):
         rand_param = []
@@ -483,7 +483,8 @@ class TitleMenu:
     '''
     Displaying the title of the game.
     '''
-    _title_name = str(r'''
+    
+    _TITLE_NAME = str(r'''
                       ___        _                         
                      / _ \      | |                        
                     / /_\ \_ __ | |_ ___  _ __   _____   __
@@ -504,7 +505,7 @@ class TitleMenu:
     
     @staticmethod
     def display_title():
-        SGR.print(TitleMenu._title_name, SGR.lt_green())
+        SGR.print(TitleMenu._TITLE_NAME, SGR.lt_green())
 
     @staticmethod
     def display_menu():
@@ -543,6 +544,12 @@ class Game:
     '''
     Game class
     '''
+
+    def __init__(self):
+        self.computer_player = None
+        self.human_player = None
+        self.player_name = None
+
     @staticmethod
     def _get_player_name():
         MAX_LENGTH = 16
@@ -608,21 +615,20 @@ class Game:
         
         return exit_status
 
-    @staticmethod
-    def play_battleship():
+    def _play_battleship(self):
         Board.player_select_board_size()
-        player_name = Game._get_player_name()
+        self.player_name = Game._get_player_name()
         
-        human_player = Human(player_name)
-        computer_player = Computer()
+        self.human_player = Human(self.player_name)
+        self.computer_player = Computer()
 
         while True:
             clear_screen()
-            computer_player.display(1, 1)
-            human_player.display(1, 31)
+            self.computer_player.display(1, 1)
+            self.human_player.display(1, 31)
 
-            Game._display_previous_message(human_player, computer_player)
-            game_status = Game._play(human_player, computer_player)
+            Game._display_previous_message(self.human_player, self.computer_player)
+            game_status = Game._play(self.human_player, self.computer_player)
 
             if game_status == 'human won':
                 Game._display_congratulations()
@@ -633,26 +639,30 @@ class Game:
                 game_status = 'exit'
 
             if game_status == 'exit':
-                del human_player
-                del computer_player
+                self.human_player = None
+                self.computer_player = None
                 return 
 
             else:
                 continue
 
+    def run(self):
+        random.seed()
+        while True:
+            user_option_select = TitleMenu.title_select_option()
+            if user_option_select == 'i':
+                print('Feature not yet implemented')
+                input('Press enter to continue:\n')
+
+            elif user_option_select == 'p':
+                self._play_battleship()
+
+            elif user_option_select == 'q':
+                return
+
 def main():
-    random.seed()
-    while True:
-        user_option_select = TitleMenu.title_select_option()
-        if user_option_select == 'i':
-            print('Feature not yet implemented')
-            input('Press enter to continue:\n')
-
-        elif user_option_select == 'p':
-            Game.play_battleship()
-
-        elif user_option_select == 'q':
-            return
+    antonov_battleship = Game()
+    antonov_battleship.run()
 
 def test():
     pass

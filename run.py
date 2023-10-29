@@ -386,7 +386,8 @@ class Human(Board):
 
     def get_coord_quit(self):
         print()
-        SGR.print('Enter your co-ordinates or your option to exit.', SGR.yellow())
+        SGR.print('Enter your co-ordinates or', SGR.yellow())
+        SGR.print('your option to exit.', SGR.yellow())
 
         print()
         while True:
@@ -576,7 +577,7 @@ class Game:
 
     def _display_player_boards(self):
         clear_screen()
-        self._display_previous_message_key_info(1, 48)
+        self._display_previous_message_key_info(1, 49)
         self.computer_player.display(1, 1)
         self.human_player.display(1, 24)
 

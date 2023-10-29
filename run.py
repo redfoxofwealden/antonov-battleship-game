@@ -373,9 +373,7 @@ class Human(Board):
                     self.column_user_select = first_column
                     self.row_user_select = second_row
 
-                    list_coord = []
-                    list_coord.append(second_row)
-                    list_coord.append(first_column)
+                    list_coord = [second_row, first_column]
                     self.previous_chosen_coord.append(list_coord)
                     exit_msg = 'OK'
             else:
@@ -444,36 +442,18 @@ class Computer(Board):
     '''
     def __init__(self):
         super().__init__('Computer', False)
-        # pass
 
     def _generate_random_coord(self):
         rand_param = []
         rand_param.append(random.randrange(Board._board_size))
         rand_param.append(random.randrange(Board._board_size))
         return rand_param
-
-    def coord_already_picked(self, row_check, column_check):
-        obj_miss_id = self._get_obj_id_by_label(Board._OBJ_MISS)
-        obj_hit_id = self._get_obj_id_by_label(Board._OBJ_HIT)
-
-        if self.board[row_check][column_check] == obj_miss_id:
-            bool_status = True
-
-        elif self.board[row_check][column_check] == obj_hit_id:
-            bool_status = True
-
-        else:
-            bool_status = False
-
-        return bool_status
         
     def exec(self, opponent):
         while True:
             row, column = self._generate_random_coord()
             if self._check_coord_picked(row, column) == False:
-                list_coord = []
-                list_coord.append(row)
-                list_coord.append(column)
+                list_coord = [row, column]
                 self.previous_chosen_coord.append(list_coord)
                 break
 
@@ -575,18 +555,29 @@ class Game:
             else:
                 return name_plyr
 
-    @staticmethod
-    def _display_congratulations():
+    def _display_congratulations(self):
+        # self._display_player_boards()
+        print()
+        message = str(f' {self.player_name} you\'ve beaten me. ')
+        msg_length = len(message)
+        msg_congratulations = str(' Congratulations!' + str(' ' * msg_length))
+        msg_congratulations = msg_congratulations[0: msg_length]
+
+        SGR.print(msg_congratulations, SGR.lt_yellow(), SGR.green())
+        SGR.print(str(' ' * msg_length), SGR.lt_yellow(), SGR.green())
+        SGR.print(message, SGR.lt_yellow(), SGR.green())
+
+    def _display_commiserations(self):
         pass
 
-    @staticmethod
-    def _display_commiserations():
-        pass
+    def _display_player_boards(self):
+        clear_screen()
+        self.computer_player.display(1, 1)
+        self.human_player.display(1, 31)
 
-    @staticmethod
-    def _display_previous_message(human_player, computer_player):
-        message_human = human_player.get_message_previous()
-        message_computer = computer_player.get_message_previous()
+    def _display_previous_message(self):
+        message_human = self.human_player.get_message_previous()
+        message_computer = self.computer_player.get_message_previous()
 
         if message_human == '' or message_computer == '':
             return
@@ -595,16 +586,13 @@ class Game:
             previous_message = str(f'Previous round: {message_human}; {message_computer}')
             SGR.print(previous_message, SGR.yellow())
 
-    @staticmethod
-    def _play(human_player, computer_player):
-        exit_status = None
-
-        human_player.get_coord_quit()
-        if human_player.continue_playing():
-            human_player.exec(computer_player)
-            if computer_player.has_ships():
-                computer_player.exec(human_player)
-                if human_player.has_ships():
+    def _play(self):
+        self.human_player.get_coord_quit()
+        if self.human_player.continue_playing():
+            self.human_player.exec(self.computer_player)
+            if self.computer_player.has_ships():
+                self.computer_player.exec(self.human_player)
+                if self.human_player.has_ships():
                     exit_status = ''
                 else:
                     exit_status = 'computer won'
@@ -623,12 +611,10 @@ class Game:
         self.computer_player = Computer()
 
         while True:
-            clear_screen()
-            self.computer_player.display(1, 1)
-            self.human_player.display(1, 31)
+            self._display_player_boards()
 
-            Game._display_previous_message(self.human_player, self.computer_player)
-            game_status = Game._play(self.human_player, self.computer_player)
+            self._display_previous_message()
+            game_status = self._play()
 
             if game_status == 'human won':
                 Game._display_congratulations()
@@ -660,11 +646,12 @@ class Game:
             elif user_option_select == 'q':
                 return
 
-def main():
-    antonov_battleship = Game()
-    antonov_battleship.run()
+# def main():
+#     antonov_battleship = Game()
+#     antonov_battleship.run()
 
 def test():
-    pass
+    antonov_battleship = Game()
+    antonov_battleship._display_congratulations()
 
-main()
+test()

@@ -385,17 +385,9 @@ class Human(Board):
         return exit_msg
 
     def get_coord_quit(self):
-        ord_A = int(ord('A'))
-        ord_nought = int(ord('1'))
+        print()
+        SGR.print('Enter your co-ordinates or your option to exit.', SGR.yellow())
 
-        print()
-        SGR.print('Enter your co-ordinates in the column row format', SGR.yellow())
-        SGR.print('For example to enter column C row 4, enter C4.', SGR.yellow())
-        msg_line = str(f'From A to {chr(self._board_size - 1 + ord_A)} and')
-        msg_line += str(f' from 1 to {chr(self._board_size - 1 + ord_nought)}')
-        SGR.print(msg_line, SGR.yellow())
-        print()
-        SGR.print('Or if you wish to exit, enter q or quit.', SGR.yellow())
         print()
         while True:
             choice = str(input('Enter your choice:\n')).replace(' ', '').upper()
@@ -489,10 +481,9 @@ class TitleMenu:
 
     @staticmethod
     def display_menu():
-        SGR.print(str('Enter I for instructions,').center(80), SGR.yellow())
-        SGR.print(str('   or P to play the game,').center(80), SGR.yellow())
-        SGR.print(str('   or Q to exit.         ').center(80), SGR.yellow())
- 
+        SGR.print(str('Enter I for instructions,    ').center(80), SGR.yellow())
+        SGR.print(str('      P to play or Q to exit.').center(80), SGR.yellow())
+  
     @staticmethod
     def input_user_option_select():
         while True:
@@ -585,19 +576,52 @@ class Game:
 
     def _display_player_boards(self):
         clear_screen()
+        self._display_previous_message_key_info(1, 48)
         self.computer_player.display(1, 1)
-        self.human_player.display(1, 31)
+        self.human_player.display(1, 24)
 
-    def _display_previous_message(self):
+    def _display_previous_message_key_info(self, row, column):
         message_human = self.human_player.get_message_previous()
         message_computer = self.computer_player.get_message_previous()
 
-        if message_human == '' or message_computer == '':
-            return
-        else:
-            print()
-            previous_message = str(f'Previous round: {message_human}; {message_computer}')
-            SGR.print(previous_message, SGR.yellow())
+        current_row = int(row)
+        self._position_cursor(current_row, int(column))
+        SGR.print('Previous round:', SGR.yellow(), None, '')
+        current_row += 2
+
+        self._position_cursor(current_row, int(column))
+        if message_human != '':            
+            SGR.print(message_human, SGR.yellow(), None, '')
+        current_row += 2
+
+        self._position_cursor(current_row, int(column))
+        if message_computer != '':            
+            SGR.print(message_computer, SGR.yellow(), None, '')
+        current_row += 2
+
+        self._position_cursor(current_row, int(column))        
+        SGR.print('Key Information', SGR.yellow(), None, '')
+        current_row += 2
+
+        self._position_cursor(current_row, int(column))        
+        SGR.print('To enter the coordinates in the format column row', SGR.yellow(), None, '')
+        current_row += 1
+
+        self._position_cursor(current_row, int(column))        
+        SGR.print('enter the column letter followed by the row number.', SGR.yellow(), None, '')
+        current_row += 1
+
+        self._position_cursor(current_row, int(column))        
+        SGR.print('For example to enter the coordinates column C, row 4,', SGR.yellow(), None, '')
+        current_row += 1
+
+        self._position_cursor(current_row, int(column))        
+        SGR.print('enter C4 and then return.', SGR.yellow(), None, '')
+        current_row += 2
+
+        self._position_cursor(current_row, int(column))
+        SGR.print('To exit the game enter q or quit.', SGR.yellow(), None, '')
+        print()
 
     def _play(self):
         self.human_player.get_coord_quit()
@@ -625,8 +649,6 @@ class Game:
 
         while True:
             self._display_player_boards()
-
-            self._display_previous_message()
             game_status = self._play()
 
             if game_status == 'human won':
@@ -644,6 +666,18 @@ class Game:
 
             else:
                 continue
+
+    def _position_cursor(self, row, column):
+        print(f'\x9B{row};{column}H', end='')
+
+    def _move_cursor_right(self, column_relative):
+        if int(column_relative) > 0:
+            print(f'\x9B{int(column_relative)}C', end='')
+        else:
+            return
+
+    def _position_cursor(self, row, column):
+        print(f'\x9B{row};{column}H', end='')
 
     def run(self):
         random.seed()

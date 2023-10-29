@@ -556,7 +556,7 @@ class Game:
                 return name_plyr
 
     def _display_congratulations(self):
-        # self._display_player_boards()
+        self._display_player_boards()
         print()
         message = str(f' {self.player_name} you\'ve beaten me. ')
         msg_length = len(message)
@@ -567,8 +567,21 @@ class Game:
         SGR.print(str(' ' * msg_length), SGR.lt_yellow(), SGR.green())
         SGR.print(message, SGR.lt_yellow(), SGR.green())
 
+        print()
+        input('Press enter to continue.\n')
+
     def _display_commiserations(self):
-        pass
+        self._display_player_boards()
+        print()
+        message = str(f'Sorry {self.player_name}!')
+
+        SGR.print(message, SGR.yellow())
+        print()
+        SGR.print('You\'ve lost.', SGR.yellow())
+        SGR.print('Better luck next time!',SGR.yellow())
+
+        print()
+        input('Press enter to continue.\n')
 
     def _display_player_boards(self):
         clear_screen()
@@ -617,11 +630,11 @@ class Game:
             game_status = self._play()
 
             if game_status == 'human won':
-                Game._display_congratulations()
+                self._display_congratulations()
                 game_status = 'exit'
 
             elif game_status == 'computer won':
-                Game._display_commiserations()
+                self._display_commiserations()
                 game_status = 'exit'
 
             if game_status == 'exit':
@@ -646,12 +659,8 @@ class Game:
             elif user_option_select == 'q':
                 return
 
-# def main():
-#     antonov_battleship = Game()
-#     antonov_battleship.run()
-
-def test():
+def main():
     antonov_battleship = Game()
-    antonov_battleship._display_congratulations()
-
-test()
+    antonov_battleship.run()
+    
+main()

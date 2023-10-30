@@ -736,20 +736,17 @@ class Game:
         SGR.print('Antonov Battleships Instructions', SGR.lt_green())
         print()
         instructions_text = str(
-            'Antonov battleship is game played between you'
-            ' and your opponent: the computer.'
-            '\nThe objective is to sink all of your opponent\'s '
-            'ships before your opponent'
-            '\ndoes. When you start the game you\'ll be asked '
-            'what size board you\'ll want to'
-            '\nplay with. You\'ll have a choice of playing with '
-            'the following size boards and'
-            '\nnumber of ships:-'
-            '\n'
-            '\n5 by 5 with 5 ships'
-            '\n6 by 6 with 7 ships'
-            '\n7 by 7 with 9 ships'
-            '\n8 by 8 with 12 ships.'
+            'Antonov battleships is game played between you and your '
+            'opponent: the computer.'
+            '\nThe objective is to sink all of your opponent\'s ships '
+            'before your opponent'
+            '\ndoes. When you start the game you\'ll be asked what size '
+            'board you\'ll want to'
+            '\nplay with. You\'ll have a choice of playing with 5 by 5 '
+            'with 5 ships, 6 by 6'
+            '\nwith 7 ships, 7 by 7 with 9 ships, or 8 by 8 with 12 ships. '
+            'The winner is the'
+            '\none who sinks all of his or her opponent\'s ships first.'
         )
         SGR.print(instructions_text, SGR.yellow())
         print()

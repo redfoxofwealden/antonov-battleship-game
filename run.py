@@ -24,6 +24,10 @@ class CSI:
         else:
             return
 
+    @staticmethod
+    def move_cursor_up_one():
+        print('\x9B1A', end='')
+
 
 class SGR:
     '''
@@ -718,6 +722,51 @@ class Game:
                 continue
 
     @staticmethod
+    def _show_object_key_info(object_label, object_char, object_char_color):
+        SGR.print(object_label, SGR.yellow())
+        CSI.move_cursor_up_one()
+        CSI.move_cursor_right(10)
+        SGR.print(object_char, object_char_color, SGR.blue())
+        CSI.move_cursor_right(10)
+        SGR.print('   ', SGR.white(), SGR.blue())
+
+    @staticmethod
+    def _show_instructions():
+        CSI.clear_screen()
+        SGR.print('Antonov Battleships Instructions', SGR.lt_green())
+        print()
+        instructions_text = str(
+            'Antonov battleship is game played between you'
+            ' and your opponent: the computer.'
+            '\nThe objective is to sink all of your opponent\'s '
+            'ships before your opponent'
+            '\ndoes. When you start the game you\'ll be asked '
+            'what size board you\'ll want to'
+            '\nplay with. You\'ll have a choice of playing with '
+            'the following size boards and'
+            '\nnumber of ships:-'
+            '\n'
+            '\n5 by 5 with 5 ships'
+            '\n6 by 6 with 7 ships'
+            '\n7 by 7 with 9 ships'
+            '\n8 by 8 with 12 ships.'
+        )
+        SGR.print(instructions_text, SGR.yellow())
+        print()
+        SGR.print('Key Information:', SGR.yellow())
+        print()
+
+        CSI.move_cursor_right(10)
+        SGR.print('   ', SGR.white(), SGR.blue())
+        Game._show_object_key_info('Ship', ' S ', SGR.black())
+        Game._show_object_key_info('Miss', '   ', SGR.white())
+        Game._show_object_key_info('Hit', ' \u2731 ', SGR.red())
+        Game._show_object_key_info('Unknown', ' \u25CF ', SGR.lt_grey())
+        print()
+
+        Game._pause()
+
+    @staticmethod
     def _pause():
         while True:
             space_string = input('Press space and then enter to continue.\n')
@@ -732,8 +781,7 @@ class Game:
         while True:
             user_option_select = TitleMenu.title_select_option()
             if user_option_select == 'i':
-                print('Feature not yet implemented')
-                input('Press enter to continue:\n')
+                Game._show_instructions()
 
             elif user_option_select == 'p':
                 self._play_battleship()
@@ -748,8 +796,8 @@ def main():
 
 
 # The idea for including the following was taken
-# from one of Corey Schafer's youtube Python tutorial:
+# from one of Corey Schafer's youtube Python tutorials:
 # if __name__ == '__main__'.  The link is below
 # (https://www.youtube.com/watch?v=sugvnHA7ElY)
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

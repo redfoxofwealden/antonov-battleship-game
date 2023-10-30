@@ -763,6 +763,34 @@ class Game:
 
         Game._pause()
 
+        CSI.clear_screen()
+        SGR.print('Antonov Battleships Instructions', SGR.lt_green())
+        print()
+        instructions_text = str(
+            'After you\'ve selected your board size and entered your '
+            'name, 2 boards'
+            '\nand an information panel will be displayed. '
+            'The first: the'
+            '\ncomputer\'s, the second: yours, and on the right the'
+            ' information'
+            '\npanel showing the outcome of the previous round and input'
+            '\ninstructions.'
+            '\n'
+            '\nOn each board the columns are labeled with letters and rows are'
+            '\nlabeled with numbers. You\'ll enter the coordinates of '
+            'where you'
+            '\nthink the opponent\'s ships is by entering the column letter'
+            '\nfollowed by the row number. For example to enter '
+            'the coordinates'
+            '\ncolumn C row 4, you\'ll enter C4.'
+            '\n'
+            '\nDuring the game you can exit by entering q or quit.'
+        )
+        SGR.print(instructions_text, SGR.yellow())
+        print()
+
+        Game._pause()
+
     @staticmethod
     def _pause():
         while True:

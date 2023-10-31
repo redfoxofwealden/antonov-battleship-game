@@ -1,14 +1,16 @@
 # Antonov Battleships
 
-{ami responsive}
+![am i responsive](readme-images/amireponsive.png)
 
-The site is deployed at [here](https://rfow-antonov-battleship-game-ecd25dcecf29.herokuapp.com/)
+The site is now deployed [here](https://rfow-antonov-battleship-game-ecd25dcecf29.herokuapp.com/)
 
 ## How To Play
 
 Antonov Battleships is game played between you and the computer. You can play with any size board from 5 by 5 to 8 by 8. The number ships the board has varies from 5 to 12 depending on the size of board.
 
 ## Features
+
+![Opening Title](readme-images/antonov-battleships.png)
 
 ### Existing Features
 
@@ -25,6 +27,9 @@ Antonov Battleships is game played between you and the computer. You can play wi
 ### Remaining Bugs
 
 ### Validator Testing
+
+The pep8 validator[pep8](https://pep8ci.herokuapp.com/)
+
 
 ## Deployment
 
@@ -49,3 +54,16 @@ The link to deployed app is [here](https://rfow-antonov-battleship-game-ecd25dce
 
 ## Credits
 
+### Resources
+
+This resource was useful
+[The Battlesip Game](https://en.wikipedia.org/wiki/Battleship_(game))
+
+Use of ASCII control code such as CSI and SGR 
+[ANSI escape code](https://en.wikipedia.org/wiki/ANSI_escape_code)
+
+Corey's Tutorial on \'if __name__ == \'__main__\'\' 
+[Python Tutorial: if __name__ == '__main__'](https://www.youtube.com/watch?v=sugvnHA7ElY)
+
+This was also useful
+[Python OOP Tutorial](https://www.youtube.com/watch?v=ZDa-Z5JzLYM)

@@ -311,10 +311,10 @@ class Board:
         print()
 
         CSI.move_cursor_right(column_relative)
-        SGR.print(str(f'Hits:   {self.hits}'), SGR.yellow())
+        SGR.print(str(f'Hits:   {str(self.hits).rjust(2)}'), SGR.yellow())
 
         CSI.move_cursor_right(column_relative)
-        SGR.print(str(f'Misses: {self.misses}'), SGR.yellow())
+        SGR.print(str(f'Misses: {str(self.misses).rjust(2)}'), SGR.yellow())
 
     def _strike(self, row_select, column_select):
         '''

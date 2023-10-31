@@ -573,16 +573,17 @@ class Game:
         self.human_player = None
         self.player_name = None
 
+    _MAX_LENGTH = 16
+
     @staticmethod
     def _get_player_name():
-        MAX_LENGTH = 16
 
         CSI.clear_screen()
         SGR.print('What\'s your name?', SGR.yellow())
         print()
         while True:
             name_plyr = str(input(str(
-                f'Enter your name (max. {MAX_LENGTH} characters):\n'
+                f'Enter your name (max. {Game._MAX_LENGTH} characters):\n'
             )))
 
             if len(name_plyr) == 0:
@@ -592,10 +593,11 @@ class Game:
                     'Make sure that you enter your name below.',
                     SGR.yellow())
                 print()
-            elif len(name_plyr) > MAX_LENGTH:
+            elif len(name_plyr) > Game._MAX_LENGTH:
                 print()
                 SGR.print('Sorry the max characters that', SGR.yellow())
-                SGR.print(str(f'you can input is {MAX_LENGTH}.'), SGR.yellow())
+                SGR.print(str(
+                    f'you can input is {Game._MAX_LENGTH}.'), SGR.yellow())
                 print()
             else:
                 return name_plyr
@@ -799,6 +801,10 @@ class Game:
                 return
             else:
                 print()
+                SGR.print(str(
+                    ' Invalid Input! Make sure you\'ve followed '
+                    'the instruction below. '
+                ), SGR.white(), SGR.red())
                 continue
 
     def run(self):

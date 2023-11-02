@@ -1,4 +1,3 @@
-# Write your code to expect a terminal of 80 characters wide and 24 rows high
 import random
 
 
@@ -735,29 +734,39 @@ class Game:
             SGR.print(message_computer, SGR.yellow(), None, '')
         current_row += 2
 
-        CSI.position_cursor(current_row, int(column))
-        SGR.print('Input Instructions:', SGR.yellow(), None, '')
-        current_row += 2
+        if self.human_player.has_ships() and self.computer_player.has_ships():
+            CSI.position_cursor(current_row, int(column))
+            SGR.print('Input Instructions:', SGR.yellow(), None, '')
+            current_row += 2
 
-        CSI.position_cursor(current_row, int(column))
-        SGR.print('To enter the coordinates, enter', SGR.yellow(), None, '')
-        current_row += 1
+            CSI.position_cursor(current_row, int(column))
+            SGR.print(
+                'To enter the coordinates, enter', SGR.yellow(), None, '')
+            current_row += 1
 
-        CSI.position_cursor(current_row, int(column))
-        SGR.print('the column letter, then row', SGR.yellow(), None, '')
-        current_row += 1
+            CSI.position_cursor(current_row, int(column))
+            SGR.print(
+                'the column letter, then row', SGR.yellow(), None, '')
+            current_row += 1
 
-        CSI.position_cursor(current_row, int(column))
-        SGR.print('number. For e.g. to enter column', SGR.yellow(), None, '')
-        current_row += 1
+            CSI.position_cursor(current_row, int(column))
+            SGR.print(
+                'number. For e.g. to enter column', SGR.yellow(), None, '')
+            current_row += 1
 
-        CSI.position_cursor(current_row, int(column))
-        SGR.print('C, row 4 enter C4.', SGR.yellow(), None, '')
-        current_row += 2
+            CSI.position_cursor(current_row, int(column))
+            SGR.print(
+                'C, row 4 enter C4.', SGR.yellow(), None, '')
+            current_row += 2
 
-        CSI.position_cursor(current_row, int(column))
-        SGR.print('To exit, enter q or quit.', SGR.yellow(), None, '')
-        print()
+            CSI.position_cursor(current_row, int(column))
+            SGR.print(
+                'To exit, enter q or quit.', SGR.yellow(), None, '')
+            print()
+
+        else:
+            CSI.position_cursor(current_row, int(column))
+            SGR.print(' Game Over! ', SGR.red(), SGR.lt_grey())
 
     def _play(self):
         self.human_player.get_coord_quit()
@@ -880,19 +889,27 @@ class Game:
     @staticmethod
     def _pause():
         while True:
-            space_string = input('Press space and then enter to continue.\n')
-            if space_string == ' ':
+            space_string = str(
+                input('Press \'c\' and then enter to continue.\n')
+            ).lower()
+            if space_string == 'c':
                 return
             else:
                 print()
                 SGR.print(str(
-                    ' Invalid Input! Make sure you\'ve followed '
-                    'the instruction below. '
+                    ' Invalid Input! Make sure you\'ve '
+                    'followed the instruction below. '
+                ), SGR.white(), SGR.red())
+                SGR.print(str(
+                    ' Make sure you enter \'c\' and then '
+                    'press enter.                   '
                 ), SGR.white(), SGR.red())
                 continue
 
     def run(self):
+        # Initialise random seed generator
         random.seed()
+
         while True:
             user_option_select = TitleMenu.title_select_option()
             if user_option_select == 'i':

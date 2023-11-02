@@ -4,21 +4,49 @@ import random
 
 class CSI:
     '''
-    CSI class
+    This is a static class that does not require instantiation
 
-    provides screen clearing
-    cursor positioning
+    CSI stands for Control Sequence Introducer
+    these methods uses escape control codes to
+    provide screen clearing functionality,
+    cursor positioning functionality.
     '''
+
+    # The escape codes used was taken from Wikipedia article on
+    # ANSI escape code.
+    # (https://en.wikipedia.org/wiki/ANSI_escape_code#)
+    #
+    # CSI (Control Sequence Introducer) sequences used by the methods in this
+    # class was taken from CSI (Control Sequence Introducer) sequences
+    # on Wikipedia
+    # (https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_(Control_Sequence_Introducer)_sequences)
+    #
     @staticmethod
     def clear_screen():
+        # clears the screen by sending 3 escape codes:
+        #
+        # clear screen backbuffer \x9B3J
+        # move cursor to top left screen \x9B;H
+        # clear screen from cursor position to
+        # end of screen \x9B0J
         print('\x9B3J\x9B;H\x9B0J', end='')
 
     @staticmethod
     def position_cursor(row, column):
+        '''
+        Position the cursor
+        starts from 1,1 - top left corner
+        '''
         print(f'\x9B{row};{column}H', end='')
 
     @staticmethod
     def move_cursor_right(column_relative):
+        '''
+        move the cursor right column_relative from the
+        current position
+
+        if column_relative is zero the function does nothing
+        '''
         if int(column_relative) > 0:
             print(f'\x9B{int(column_relative)}C', end='')
         else:
@@ -31,9 +59,22 @@ class CSI:
 
 class SGR:
     '''
-    List of colors
+    This is a static class that does not require instantiation
+    Stands for Select Graphic Rendition
+    This class provides methods for foreground and background
+    coloring functionality to strings and is used by te other classes
+    in the app.
     '''
 
+    # The escape codes used was taken from Wikipedia article on
+    # ANSI escape code.
+    # (https://en.wikipedia.org/wiki/ANSI_escape_code#)
+    #
+    # SGR (Select Graphic Rendition) escape codes used in this
+    # class was taken from SGR (Select Graphic Rendition) parameters
+    # article on Wikipedia.
+    # (https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters)
+    #
     @staticmethod
     def black():
         return 0
@@ -100,6 +141,15 @@ class SGR:
 
     @staticmethod
     def char(str_char_arg, fg_clr):
+        '''
+        Applies foreground color escape codes to
+        characters.
+        '''
+        # The escape code for the first 7 foreground colors are
+        # from \x9B30m to \x9B37m.
+        # The remaining 8 are from
+        # \x9B90m to \x9B97m.
+        #
         fg_clr_prm = (int(fg_clr) + 30) \
             if int(fg_clr) < 8 else (int(fg_clr) + 82)
         fg_chars = str(f'\x9B{fg_clr_prm}m')
@@ -107,11 +157,37 @@ class SGR:
 
     @staticmethod
     def print(str_argument, fg_clr, bg_clr=None, endline='\n'):
+        '''
+        This function provides foreground and background
+        coloring functionality to printing texts
+        It achieves this creating escape code and then sending
+        them through the print function
+
+        After the text is printed the foreground and background colors
+        are reset to its system defaults
+        '''
+
+        # The escape code for the first 7 foreground colors are
+        # from \x9B30m to \x9B37m.
+        # The remaining 8 are from
+        # \x9B90m to \x9B97m.
+        #
+        # The reset code for the foreground color is \x9B39m
+        # for reseting the foreground color to system default.
+        #
         fg_clr_prm = (int(fg_clr) + 30) \
             if int(fg_clr) < 8 else (int(fg_clr) + 82)
         fg_chars = str(f'\x9B{fg_clr_prm}m')
         fg_def_chars = str('\x9B39m')
 
+        # The escape code for the first 7 background colors are
+        # from \x9B40m to \x9B47m.
+        # The remaining 8 are from
+        # \x9B100m to \x9B107m.
+        #
+        # The reset code for the background color is \x9B49m
+        # for reseting the background color to system default.
+        #
         if bg_clr is not None:
             bg_clr_prm = (int(bg_clr) + 40) \
                 if int(bg_clr) < 8 else (int(bg_clr) + 92)
@@ -496,7 +572,11 @@ class Computer(Board):
 
 class TitleMenu:
     '''
-    Displaying the title of the game.
+    This is a static class used for
+    displaying the title of the game,
+    and displays menu options.
+
+    This class does not require instantiation.
     '''
 
     _TITLE_NAME = str(r'''
@@ -737,6 +817,8 @@ class Game:
         CSI.clear_screen()
         SGR.print('Antonov Battleships Instructions', SGR.lt_green())
         print()
+        # The texts here have been delibrately broken up
+        # so that the code can pass the lint test
         instructions_text = str(
             'Antonov battleships is game played between you and your '
             'opponent: the computer.'
@@ -768,6 +850,8 @@ class Game:
         CSI.clear_screen()
         SGR.print('Antonov Battleships Instructions', SGR.lt_green())
         print()
+        # The texts here have been delibrately broken up
+        # so that the code can pass the lint test
         instructions_text = str(
             'After you\'ve selected your board size and entered your '
             'name, 2 boards'

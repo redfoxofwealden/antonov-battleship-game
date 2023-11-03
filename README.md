@@ -6,80 +6,92 @@ The site is deployed [here](https://rfow-antonov-battleship-game-ecd25dcecf29.he
 
 ## About Antonov Battleships
 
-Antonov Battleships is a game played between the user and the computer. The user can choose to play with any size board from 5 by 5 to 8 by 8. The number ships the board has varies from 5, 7, 9 and 12 ships depending on the size of board.
+Antonov Battleships is a single player game played between you, the user, and the computer. The objective is to sink to all of the computer\'s ships first before the computer sinks all of yours. You can choose to play with any size board from 5 by 5 to 8 by 8. The number ships the board has varies from 5, 7, 9 and 12 ships depending on the size of board. All the ships are placed at random on the board.
 
-When the user starts the game the app presents 4 options with different size boards with a number of ships. Then the app asks for the user\'s name and starts the game. Two boards are presented with the ships placed on the boards at random.
-
-The objective is to sink all the ships before one\'s opponent does.
+The title for the game was chosen on an arbitrary basis.
 
 ## How to play
 
-The game is started by entering p and pressing enter.
+The game is started by selecting play from the title screen.
 
 ### Board size selection
 
-The first thing the app asks for is to select the board size as shown. Each size comes with a number of ships to play with.
+The first thing the game asks you to do is to select the board size as shown. Each size comes with a determined number of ships to play with.
 
 ![board size select option](docs/board-size-selection.png)
 
 ### Name input
 
-The second thing the app asks for is your name.
+The second thing the game asks for is your name.
 
 ![name input](docs/name-input.png)
 
 ### Opening game
 
-The game opens up with this as shown
+The game opens up with this display as shown
 
 ![opening game](docs/play-open-round.png)
 
-It displays two boards and informatiom on the right. The first board shows the computer. Each position is marked with a dot and ships are revealed.
+It displays two boards and an information panel on the right.
 
-The second board, your board, shows the position of the ships. On each board the rows are labeled by numbers and column by letters. You enter your guess of where you think the computer ship is. You enter the coordinates using the column row format: for example to enter column C row 2 you enter c2 as shown above.
+The first board shows the computer. Every position is marked with a dot and __no__ ships are revealed.
+
+The second board, your board, shows the position of the ships and the rest of positions are marked with a dot.
+
+The ships on both boards are placed at random.
+
+On each board the rows are labeled by numbers and column by letters. You enter your guess of where you think one of the computer ships is. You enter the coordinates using the column row format: for example to enter column C row 2 you enter c2 as shown above.
+
+The information panel on the right shows the outcome from the previous round. Below that the input instructions to remind you how to input coordinates.
 
 ### Play
 
 ![during game play](docs/game-in-play-2.png)
 
-If the coordinates that you\'ve input results in a miss a blank space appears. If it results in a hit a red asterisk sppears as shown above.
+You and the computer take turns at playing the game. 
+
+If the coordinates that you\'ve input results in a miss a blank space appears. If it results in a hit a red asterisk sppears as shown above. Your and the computer\'s scores are updated for each round. If you or the computer missed, the \'Misses\' score is updated. If you or the computer hits a ship, the \'Hits\' score is updated.
 
 The panel on the right show what happened during previous round: whether you and the computer had missed or hit a ship.
 
 ### End Game
 
-When you won that is the computer has all its ships hit the game ends with this message as shown below.
+When you won, that is the computer has all its ships, the game ends with this message as shown below.
 
 ![congratulatory message](docs/player-won-message.png)
 
-If you lose all your ships the message below is shown.
+If you lose all your ships the game ends with the message shown below.
 
 ![player lost message](docs/player-lost-message.png)
 
 ## Features
 
-![Opening Title](docs/antonov-battleships.png)
-
 ### Existing Features
 
-The app features title with options, instructions and the game.
-The app starts with the opening title as shown above. After user has selected the size of board and entered one's name, the computer's, player's board, information board is displayed as shown below.
+#### Opening title and options
+
+![Opening Title](docs/antonov-battleships.png)
+
+The image above features an opening title displayed in light green color. The options below are displayed in yellow.
+
+#### The game
 
 ![the game in play](docs/game-in-play-general.png)
 
-The information panel on the right displays what happened during the previous round and input instructions below that.
+##### Board
 
-#### Board
+Each board has player's or computer name, score board showing both hits and misses and the game board. The game board's column are headed letters and rows by numbers.
+The background of the board is blue to distinguish the position of pieces.
+See image above.
 
-Each board has player's or computer name, score showing both hits and misses and the game board. The board's column are headed letters and rows by numbers from 1.
-
-#### Information panel
+##### Information panel
 
 The information panel display on the right of the two boards displays what happened during the previous round. Underneath the input instructions are displayed. At the end of the game, a game over message is displayed.
+See image above.
 
 #### Input validation
 
-The app validates an incorrect input with a message as shown below. An invalid message is displayed with white text on red background.
+The game validates an incorrect input with a message as shown below. An invalid message is displayed with white text on red background.
 
 ![invalid input](docs/example-invalid-input.png)
 
@@ -87,13 +99,17 @@ If the user input coordinates already inputed this message below is displayed. A
 
 ![warning message](docs/warning-message.png)
 
-## Concept and Design
+#### Coordinate input system
 
-The title for the game was chosen arbitrarily.
+The coordinate system used in the game is the column, represented by letters, and row, represented by numbers. The user inputs the coordinate using the column row format: for example if the user wanted to input column C, row 4 then the user inputs C4. If the two are transposed it will be classed as an invalid input.
 
 ## Data Model
 
+The Human and Computer classes are used to represent the human and computer respectively. Both are derived from the Board class.
 
+The Board class stores the position of the ships, hits and misses. It also stores whether to reveal the ships\' position. It also stores the scores: both hits and misses. And it also stores previous chosen coordinates from both derived classes. However the class does __not__ disguish between human and computer.
+
+The difference between the computer and human is the way coordinates are taken. The human class asks you to input the coordinates and the computer class generates them at random.
 
 ## Testing
 
@@ -190,11 +206,13 @@ I'd like to thank my mentor for providing excellent guidance and advice.
 
 ### Resources
 
-Use of ASCII escape control code in classes CSI and SGR was taken from [ANSI escape code](https://en.wikipedia.org/wiki/ANSI_escape_code)
+Use of ASCII escape control code in classes CSI and SGR was taken from [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code)
 
 The use of clearing screen and positioning the cursor using control codes was taken from [CSI (Control Sequence Introducer) sequences](https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_(Control_Sequence_Introducer)_sequences) on Wikipedia.
 
 The use of color control codes used in the SGR class was taken from [SGR (Select Graphic Rendition) parameters](https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters) on Wikipedia.
+
+The ASCII generator was used to create the title of the game - [ASCII Generator](http://www.network-science.de/ascii/)
 
 This resource was useful to aid my understanding on the use of control characters to position cursors, clear screens and color foreground and background [Build your own Command Line with ANSI escape codes](https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html).
 

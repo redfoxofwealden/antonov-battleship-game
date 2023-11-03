@@ -7,17 +7,13 @@ class CSI:
 
     CSI stands for Control Sequence Introducer
     these methods uses escape control codes to
-    provide screen clearing functionality,
+    provide screen clearing and
     cursor positioning functionality.
     '''
 
-    # The escape codes used was taken from Wikipedia article on
-    # ANSI escape code.
-    # (https://en.wikipedia.org/wiki/ANSI_escape_code#)
-    #
-    # CSI (Control Sequence Introducer) sequences used by the methods in this
-    # class was taken from CSI (Control Sequence Introducer) sequences
-    # on Wikipedia
+    # CSI (Control Sequence Introducer) escape codes used by the
+    # methods in this class was taken from CSI
+    # (Control Sequence Introducer) sequences article on Wikipedia
     # (https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_(Control_Sequence_Introducer)_sequences)
     #
     @staticmethod
@@ -65,10 +61,6 @@ class SGR:
     in the app.
     '''
 
-    # The escape codes used was taken from Wikipedia article on
-    # ANSI escape code.
-    # (https://en.wikipedia.org/wiki/ANSI_escape_code#)
-    #
     # SGR (Select Graphic Rendition) escape codes used in this
     # class was taken from SGR (Select Graphic Rendition) parameters
     # article on Wikipedia.
@@ -204,7 +196,23 @@ class SGR:
 class Board:
     '''
     Board class
+
+    store the position of ships, misses and hits
+    keeps track of the scores: hits and misses
+    keeps track of previously chosen coordinates
     '''
+
+    def __init__(self, name, reveal_ships):
+        self.name = str(name)
+        self.reveal_ships = bool(reveal_ships)
+        self.board = []
+        self.hits = 0
+        self.misses = 0
+        self.num_ships_remaining = self._number_of_ships
+        self.previous_message = ''
+        self.previous_chosen_coord = []
+        self._create_board()
+        self._position_ships()
 
     _board_size = 5
     _number_of_ships = 5
@@ -272,18 +280,6 @@ class Board:
             'char': SGR.char('\u2731 ', SGR.red())
         }
     )
-
-    def __init__(self, name, reveal_ships):
-        self.name = str(name)
-        self.reveal_ships = bool(reveal_ships)
-        self.board = []
-        self.hits = 0
-        self.misses = 0
-        self.num_ships_remaining = self._number_of_ships
-        self.previous_message = ''
-        self.previous_chosen_coord = []
-        self._create_board()
-        self._position_ships()
 
     def _check_coord_picked(self, row, column):
         for element in self.previous_chosen_coord:
@@ -578,6 +574,10 @@ class TitleMenu:
     This class does not require instantiation.
     '''
 
+    # The title for the game was generated using
+    # the ASCII Generator here at
+    # (http://www.network-science.de/ascii/)
+    #
     _TITLE_NAME = str(r'''
                       ___        _
                      / _ \      | |

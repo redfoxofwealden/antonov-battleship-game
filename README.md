@@ -119,7 +119,7 @@ The Human and Computer classes are used to represent the human and computer resp
 
 The Board class stores the position of the ships, hits and misses. It also stores whether to reveal the ships\' position. It also stores the scores: both hits and misses. And it also stores previous chosen coordinates from both derived classes. However the class does __not__ disguish between human and computer.
 
-The difference between the computer and human is the way coordinates are taken. The human class asks you to input the coordinates and the computer class generates them at random.
+The difference between the computer and human classes is the way coordinates are generated and inputed. The human class asks you to input the coordinates and the computer class generates them at random.
 
 ## Testing
 

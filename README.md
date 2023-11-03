@@ -6,7 +6,7 @@ The site is deployed [here](https://rfow-antonov-battleship-game-ecd25dcecf29.he
 
 ## About Antonov Battleships
 
-Antonov Battleships is a single player game played between you, the user, and the computer. The objective is to sink to all of the computer\'s ships first before the computer sinks all of yours. You can choose to play with any size board from 5 by 5 to 8 by 8. The number ships the board has varies from 5, 7, 9 and 12 ships depending on the size of board. All the ships are placed at random on the board.
+Antonov Battleships is a single player game played between you, the user, and the computer. The objective is to sink all of the computer\'s ships first before the computer sinks all of yours. You can choose to play with any size board from 5 by 5 to 8 by 8. The number ships the board has varies from 5, 7, 9 and 12 ships depending on the size of board. All the ships are placed at random on the board.
 
 The game is aimed at users who have some spare time and want to while away their time.
 
@@ -48,7 +48,7 @@ The information panel on the right shows the outcome from the previous round. Be
 
 ![during game play](docs/game-in-play-2.png)
 
-You and the computer take turns at playing the game. 
+You and the computer take turns at playing the game.
 
 If the coordinates that you\'ve input results in a miss a blank space appears. If it results in a hit a red asterisk sppears as shown above. Your and the computer\'s scores are updated for each round. If you or the computer missed, the \'Misses\' score is updated. If you or the computer hits a ship, the \'Hits\' score is updated.
 

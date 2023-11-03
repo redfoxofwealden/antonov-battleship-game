@@ -8,7 +8,7 @@ The site is deployed [here](https://rfow-antonov-battleship-game-ecd25dcecf29.he
 
 Antonov Battleships is a single player game played between you, the user, and the computer. The objective is to sink to all of the computer\'s ships first before the computer sinks all of yours. You can choose to play with any size board from 5 by 5 to 8 by 8. The number ships the board has varies from 5, 7, 9 and 12 ships depending on the size of board. All the ships are placed at random on the board.
 
-The title for the game was chosen on an arbitrary basis.
+The game is aimed at users who have some spare time and want to while away their time.
 
 ## How to play
 
@@ -102,6 +102,16 @@ If the user input coordinates already inputed this message below is displayed. A
 #### Coordinate input system
 
 The coordinate system used in the game is the column, represented by letters, and row, represented by numbers. The user inputs the coordinate using the column row format: for example if the user wanted to input column C, row 4 then the user inputs C4. If the two are transposed it will be classed as an invalid input.
+
+#### Instructions
+
+The game has instructions that the player can view before playing the game. It is displayed over 2 screens. The first part is shown below.
+
+![Instructions part 1](docs/instructions-part-1.png)
+
+And the 2nd part is here below.
+
+![Instructions part 2](docs/instructions-part-2.png)
 
 ## Data Model
 

@@ -1,6 +1,6 @@
 # Antonov Battleships
 
-![am i responsive](readme-images/amireponsive.png)
+![am i responsive](docs/amireponsive.png)
 
 The site is deployed [here](https://rfow-antonov-battleship-game-ecd25dcecf29.herokuapp.com/)
 
@@ -12,42 +12,88 @@ When the user starts the game the app presents 4 options with different size boa
 
 The objective is to sink all the ships before one\'s opponent does.
 
+## How to play
+
+The game is started by entering p and pressing enter.
+
+### Board size selection
+
+The first thing the app asks for is to select the board size as shown. Each size comes with a number of ships to play with.
+
+![board size select option](docs/board-size-selection.png)
+
+### Name input
+
+The second thing the app asks for is your name.
+
+![name input](docs/name-input.png)
+
+### Opening game
+
+The game opens up with this as shown
+
+![opening game](docs/play-open-round.png)
+
+It displays two boards and informatiom on the right. The first board shows the computer. Each position is marked with a dot and ships are revealed.
+
+The second board, your board, shows the position of the ships. On each board the rows are labeled by numbers and column by letters. You enter your guess of where you think the computer ship is. You enter the coordinates using the column row format: for example to enter column C row 2 you enter c2 as shown above.
+
+### Play
+
+![during game play](docs/game-in-play-2.png)
+
+If the coordinates that you\'ve input results in a miss a blank space appears. If it results in a hit a red asterisk sppears as shown above.
+
+The panel on the right show what happened during previous round: whether you and the computer had missed or hit a ship.
+
+### End Game
+
+When you won that is the computer has all its ships hit the game ends with this message as shown below.
+
+![congratulatory message](docs/player-won-message.png)
+
+If you lose all your ships the message below is shown.
+
+![player lost message](docs/player-lost-message.png)
+
 ## Features
 
-![Opening Title](readme-images/antonov-battleships.png)
+![Opening Title](docs/antonov-battleships.png)
 
 ### Existing Features
 
 The app features title with options, instructions and the game.
 The app starts with the opening title as shown above. After user has selected the size of board and entered one's name, the computer's, player's board, information board is displayed as shown below.
 
-![the game in play](readme-images/game-in-play.png)
+![the game in play](docs/game-in-play-general.png)
 
-The information panel on the right displays  what happened during the previous round and input instructions below.
+The information panel on the right displays what happened during the previous round and input instructions below that.
 
-As shown above, a miss is represented with a blank space and a hit with a red asterisk.
+#### Board
+
+Each board has player's or computer name, score showing both hits and misses and the game board. The board's column are headed letters and rows by numbers from 1.
+
+#### Information panel
+
+The information panel display on the right of the two boards displays what happened during the previous round. Underneath the input instructions are displayed. At the end of the game, a game over message is displayed.
 
 #### Input validation
 
-The app validates with an incorrect input as shown below
+The app validates an incorrect input with a message as shown below. An invalid message is displayed with white text on red background.
 
-![invalid input](readme-images/example-invalid-input.png)
+![invalid input](docs/example-invalid-input.png)
 
-#### Warning
+If the user input coordinates already inputed this message below is displayed. As it is a warning message, the text is displayed with black text on a white background.
 
-If the user input coordinates already inputed this message below is displayed.
+![warning message](docs/warning-message.png)
 
-![warning message](readme-images/warning-message.png)
-
-## Concept
+## Concept and Design
 
 The title for the game was chosen arbitrarily.
 
 ## Data Model
 
-The app uses object orientated design. It uses these classes: SGI, CSI, Board, Computer, Human, TitleMenu and Game. Three of the classes: SGI, CSI and TitleMenu are static classes and require no instantiation. The others are instance classes.
 
-The Board class is important as it manages the pieces.
 
 ## Testing
 
@@ -94,7 +140,7 @@ if self._check_coord_picked(row, column) == False:
     break
 ```
 
-To pass the lint the code was changed to this shown below.
+To pass the lint test the code was changed to this shown below.
 
 ```py
 if self._check_coord_picked(row, column) is False:
